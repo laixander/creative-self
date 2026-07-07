@@ -12,16 +12,35 @@
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.114",
-    "@iconify-json/simple-icons": "^1.2.87",
+    "@iconify-json/simple-icons": "^1.2.86",
+    "@nuxt/image": "2.0.0",
     "@nuxt/ui": "^4.9.0",
+    "@pinia/nuxt": "^0.11.3",
     "nuxt": "^4.4.8",
-    "tailwindcss": "^4.3.1"
+    "pinia": "^3.0.4",
+    "tailwindcss": "^4.3.1",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.16.0",
-    "eslint": "^10.6.0",
+    "@prisma/client": "^6.19.3",
+    "@types/node": "^26.1.0",
+    "eslint": "^10.5.0",
+    "prisma": "^6.19.3",
     "typescript": "^6.0.3",
     "vue-tsc": "^3.3.5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "esbuild",
+      "nuxt"
+    ]
+  },
+  "prisma": {
+    "seed": "bun prisma/seed.ts"
   },
   "packageManager": "pnpm@11.9.0"
 }
