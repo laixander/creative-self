@@ -46,34 +46,34 @@ const items: NavigationMenuItem[] = [
       to: '/provider/offerings'
     },
     {
-      label: 'Requests',
+      label: 'Booking Requests',
       icon: 'i-lucide-messages-square',
-      to: ''
+      to: '/provider/requests'
     },
     {
-      label: 'Schedule',
+      label: 'Schedule Monitoring',
       icon: 'i-lucide-calendar-days',
-      to: ''
+      to: '/provider/schedule'
     },
     {
-      label: 'Availed',
+      label: 'Availed Services',
       icon: 'i-lucide-circle-check-big',
-      to: ''
+      to: '/provider/availed'
     },
     {
-      label: 'Clients',
+      label: 'Company Clients',
       icon: 'i-lucide-briefcase',
-      to: ''
+      to: '/provider/clients'
     },
     {
-      label: 'Media',
+      label: 'Media Content',
       icon: 'i-lucide-image',
-      to: ''
+      to: '/provider/media'
     },
     {
-      label: 'Profile',
+      label: 'Provider Profile',
       icon: 'i-lucide-user',
-      to: ''
+      to: '/provider/profile'
     }
   ]
 ]
@@ -119,7 +119,7 @@ const pageTitle = computed(() => route.meta.title as string)
         side === 'right' && 'justify-end'
       ]">
         <UButton :icon="side === 'left' ? 'i-lucide-panel-left' : 'i-lucide-panel-right'" color="neutral"
-          variant="ghost" aria-label="Toggle sidebar" @click="open = !open" />
+          variant="ghost" aria-label="Toggle sidebar" @click="() => { open = !open }" />
         <h1 class="font-bold ml-2">{{ pageTitle }}</h1>
         <div class="ml-auto flex items-center gap-2">
           <!-- Dynamic teleport target for pages that need reactive header actions -->

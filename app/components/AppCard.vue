@@ -9,7 +9,9 @@ const props = defineProps<{
         <div class="flex justify-between items-center">
             <div>
                 <div class="text-highlighted font-semibold">
-                    {{ title }}
+                    <slot v-if="$slots.title" name="title">
+                        {{ title }}
+                    </slot>
                 </div>
                 <div class="mt-1 text-muted text-sm">
                     {{ description }}
