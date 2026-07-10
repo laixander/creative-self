@@ -10,15 +10,17 @@ const stats = computed(() => [
     { label: 'Companies Served', value: providerStore.clients.length.toString(), icon: 'i-lucide-circle-check-big', color: 'purple' }
 ])
 
-const upcomingBooking = computed(() => providerStore.scheduleEvents.map(event => ({
-    id: event.id,
-    title: event.title,
-    organization: event.organization || 'No organization',
-    date: event.date,
-    image: `/img/stockphoto_${(event.id % 15) + 1}.jpg`,
-    status: event.status,
-    statusColor: event.status === 'Confirmed' ? 'primary' : 'warning'
-})))
+const upcomingBooking = computed(() => providerStore.bookings
+    .filter(b => b.status === 'confirmed' || b.status === 'pending')
+    .map(b => ({
+        id: b.id,
+        title: b.offering,
+        organization: b.company,
+        date: b.date,
+        image: `/img/stockphoto_${(b.id % 15) + 1}.jpg`,
+        status: b.status,
+        statusColor: b.status === 'confirmed' ? 'primary' : 'warning'
+    })))
 
 const completedEngagement = computed(() => providerStore.availedBookings.filter(b => b.status === 'completed').map(b => ({
     id: b.id,
@@ -81,7 +83,7 @@ const { page: completedPage, paginatedItems: paginatedEngagements, pageSize: com
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <UBadge :label="booking.status" :color="(booking as any).statusColor" variant="subtle"
-                                        size="sm" />
+                                        size="sm" class="capitalize" />
                                 </div>
                             </div>
                         </UCard>

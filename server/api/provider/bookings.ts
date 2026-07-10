@@ -81,6 +81,14 @@ export const bookings: Booking[] = [
     date: '2026-08-12',
     participants: 80,
     status: 'confirmed'
+  },
+  {
+    id: 11,
+    company: 'Nexus Innovations',
+    offering: 'Team Building Workshop',
+    date: '2026-08-20',
+    participants: 25,
+    status: 'pending'
   }
 ]
 
