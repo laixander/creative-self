@@ -1,8 +1,8 @@
 export default defineAppConfig({
   ui: {
     colors: {
-      primary: 'green',
-      neutral: 'mist',
+      primary: 'teal',
+      neutral: 'taupe',
       // Full Tailwind palette
       red: 'red',
       orange: 'orange',

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useProviderStore } from '~/stores/providerStore'
 import type { DropdownMenuItem } from '@nuxt/ui'
 
 definePageMeta({
@@ -34,104 +35,8 @@ interface Event {
     status?: 'Confirmed' | 'Pending'
 }
 
-const events = ref<Event[]>([
-    {
-        id: 1,
-        title: 'Mindful Mondays — 8 Week Program',
-        date: '2026-07-13',
-        time: '09:00 AM',
-        duration: '60 min',
-        participants: 45,
-        type: 'online',
-        color: 'primary',
-        organization: 'Northwind Labs',
-        locationStr: 'Zoom',
-        status: 'Confirmed'
-    },
-    {
-        id: 2,
-        title: 'Stress Resilience Workshop',
-        date: '2026-07-22',
-        time: '01:30 PM',
-        duration: '90 min',
-        participants: 30,
-        type: 'in-person',
-        color: 'success',
-        organization: 'Helio Finance',
-        locationStr: 'London office + Zoom',
-        status: 'Confirmed'
-    },
-    {
-        id: 3,
-        title: 'HIIT Bootcamp',
-        date: '2026-07-28',
-        time: '06:00 PM',
-        duration: '45 min',
-        participants: 15,
-        type: 'in-person',
-        color: 'warning'
-    },
-    {
-        id: 4,
-        title: 'Corporate Mindfulness Seminar',
-        date: '2026-08-05',
-        time: '10:00 AM',
-        duration: '120 min',
-        participants: 120,
-        type: 'hybrid',
-        color: 'info'
-    },
-    {
-        id: 5,
-        title: 'Morning Yoga Flow',
-        date: '2026-07-18',
-        time: '07:00 AM',
-        duration: '60 min',
-        participants: 50,
-        type: 'online',
-        color: 'secondary'
-    },
-    {
-        id: 6,
-        title: 'Gut Health Fundamentals',
-        date: '2026-07-30',
-        time: '12:00 PM',
-        duration: '60 min',
-        participants: 60,
-        type: 'online',
-        color: 'error'
-    },
-    {
-        id: 7,
-        title: 'Breathwork for Beginners',
-        date: '2026-07-10',
-        time: '05:30 PM',
-        duration: '45 min',
-        participants: 35,
-        type: 'in-person',
-        color: 'primary'
-    },
-    {
-        id: 8,
-        title: 'Mindful Mondays — 8 Week Program',
-        date: '2026-07-20',
-        time: '09:00 AM',
-        duration: '60 min',
-        participants: 45,
-        type: 'online',
-        color: 'primary'
-    },
-    {
-        id: 9,
-        title: 'Mindful Mondays — 8 Week Program',
-        date: '2026-07-27',
-        time: '09:00 AM',
-        duration: '60 min',
-        participants: 45,
-        type: 'online',
-        color: 'primary'
-    }
-])
+const providerStore = useProviderStore()
+const events = computed(() => providerStore.scheduleEvents)
 
 // ============================================================================
 // Calendar Logic
@@ -286,7 +191,7 @@ const getEventDropdownItems = (event: Event): DropdownMenuItem[] => [
     </Teleport>
 
     <!-- Calendar View -->
-    <div v-if="viewMode === 'calendar'" class="flex-1 flex flex-col min-h-0 overflow-hidden">
+    <div v-if="viewMode === 'calendar'" class="flex-1 flex flex-col min-h-0 overflow-y-auto scrollbar">
         <!-- Calendar Header Controls -->
         <div class="flex items-center justify-between px-6 py-4 border-b border-default bg-surface">
             <div class="flex items-center gap-4">
@@ -343,11 +248,11 @@ const getEventDropdownItems = (event: Event): DropdownMenuItem[] => [
 
     <!-- List View -->
     <div v-else-if="viewMode === 'list'" class="flex-1 flex flex-col overflow-y-auto scrollbar p-4 sm:p-6 bg-surface">
-        <!-- <div class="flex items-center justify-between mb-6">
-            <h2 class="text-xl font-semibold text-highlighted">Upcoming Schedule</h2>
-        </div> -->
-
-        <div class="flex flex-col gap-8 max-w-4xl mx-auto w-full pb-8">
+        <div v-if="events.length === 0" class="flex-1 flex flex-col items-center justify-center p-8">
+            <UEmpty icon="i-lucide-calendar" title="No schedule events found"
+                description="Get started by deploying demo data." />
+        </div>
+        <div v-else class="flex flex-col gap-8 max-w-4xl mx-auto w-full pb-8">
             <div v-for="[month, monthEvents] in groupedEvents" :key="month" class="flex flex-col gap-3">
                 <h3 class="text-xs font-semibold text-muted tracking-wider">{{ month }}</h3>
 

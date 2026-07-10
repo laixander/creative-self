@@ -22,88 +22,13 @@ interface BookingRow {
 // ============================================================================
 // Table data
 // ============================================================================
-const bookings = ref<BookingRow[]>([
-    {
-        id: 1,
-        company: 'Northwind Labs',
-        offering: 'Mindful Mondays — 8 Week Program',
-        date: '2026-07-13',
-        participants: 45,
-        status: 'confirmed'
-    },
-    {
-        id: 2,
-        company: 'Helio Finance',
-        offering: 'Stress Resilience Workshop',
-        date: '2026-07-22',
-        participants: 30,
-        status: 'confirmed'
-    },
-    {
-        id: 3,
-        company: 'Apex Digital',
-        offering: 'HIIT Bootcamp',
-        date: '2026-07-28',
-        participants: 15,
-        status: 'confirmed'
-    },
-    {
-        id: 4,
-        company: 'Blueridge Partners',
-        offering: 'Corporate Mindfulness Seminar',
-        date: '2026-08-05',
-        participants: 120,
-        status: 'confirmed'
-    },
-    {
-        id: 5,
-        company: 'Solaris Group',
-        offering: 'Morning Yoga Flow',
-        date: '2026-06-18',
-        participants: 50,
-        status: 'completed'
-    },
-    {
-        id: 6,
-        company: 'Crestline Media',
-        offering: 'Strength Training 101',
-        date: '2026-06-25',
-        participants: 8,
-        status: 'completed'
-    },
-    {
-        id: 7,
-        company: 'Veritas Capital',
-        offering: 'Gut Health Fundamentals',
-        date: '2026-07-30',
-        participants: 60,
-        status: 'confirmed'
-    },
-    {
-        id: 8,
-        company: 'Ironclad Systems',
-        offering: 'Breathwork for Beginners',
-        date: '2026-06-10',
-        participants: 35,
-        status: 'completed'
-    },
-    {
-        id: 9,
-        company: 'Luminary Co.',
-        offering: 'Kettlebell Core Crush',
-        date: '2026-07-03',
-        participants: 12,
-        status: 'cancelled'
-    },
-    {
-        id: 10,
-        company: 'Zenith Consulting',
-        offering: 'Sleep Hygiene Masterclass',
-        date: '2026-08-12',
-        participants: 80,
-        status: 'confirmed'
-    }
-])
+import { useProviderStore } from '~/stores/providerStore'
+const providerStore = useProviderStore()
+
+const bookings = computed({
+    get: () => providerStore.bookings as BookingRow[],
+    set: (val) => { providerStore.bookings = val as any }
+})
 
 const statusColors: Record<BookingRow['status'], string> = {
     confirmed: 'info',
@@ -198,7 +123,6 @@ const bookingColumns: TableColumn<BookingRow>[] = [
 // Page meta
 // ============================================================================
 definePageMeta({
-    title: 'Requests',
     isTable: true
 })
 
@@ -285,16 +209,25 @@ watch([filteredData], () => { page.value = 1 })
     </Teleport>
 
     <UTable v-if="viewMode === 'table'" sticky :data="pagedData" :columns="bookingColumns" ref="table"
-        v-model:column-visibility="columnVisibility" class="flex-1" />
+        v-model:column-visibility="columnVisibility" class="flex-1">
+        <template #empty>
+            <UEmpty variant="naked" icon="i-lucide-clipboard-list" title="No requests found" description="When a company submits a request, it will appear here." />
+        </template>
+    </UTable>
 
-    <div v-if="viewMode === 'table' && filteredData.length > pageSize"
-        class="flex justify-center py-4 border-t border-default">
-        <UPagination v-model:page="page" :total="filteredData.length" :items-per-page="pageSize" variant="subtle" />
-    </div>
+        <div v-if="viewMode === 'table' && filteredData.length > pageSize"
+            class="flex justify-center py-4 border-t border-default">
+            <UPagination v-model:page="page" :total="filteredData.length" :items-per-page="pageSize" variant="subtle" />
+        </div>
 
-    <div v-else-if="viewMode === 'cards'" class="flex-1 flex flex-col overflow-y-auto scrollbar">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 p-4 sm:p-6">
-            <UCard v-for="booking in pagedData" :key="booking.id" variant="subtle"
+    <template v-else-if="viewMode === 'cards'">
+        <div class="flex-1 flex flex-col overflow-y-auto scrollbar" :class="[bookings.length === 0 ? 'justify-center' : '']">
+            <template v-if="bookings.length === 0">
+                <UEmpty variant="naked" icon="i-lucide-clipboard-list" title="No requests found" description="When a company submits a request, it will appear here." />
+            </template>
+            <template v-else>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 p-4 sm:p-6">
+                    <UCard v-for="booking in pagedData" :key="booking.id" variant="subtle"
                 :ui="{ root: 'flex flex-col justify-start', body: 'flex-1' }" class="shadow-sm">
                 <div>
                     <div class="flex items-center gap-2">
@@ -325,9 +258,11 @@ watch([filteredData], () => { page.value = 1 })
                     </div>
                 </template>
             </UCard>
+                </div>
+            </template>
         </div>
         <div v-if="filteredData.length > pageSize" class="mt-auto flex justify-center py-4 border-t border-default">
             <UPagination v-model:page="page" :total="filteredData.length" :items-per-page="pageSize" variant="subtle" />
         </div>
-    </div>
+    </template>
 </template>

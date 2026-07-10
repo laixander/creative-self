@@ -32,139 +32,14 @@ interface MediaPost {
 // ============================================================================
 // Data
 // ============================================================================
+import { useProviderStore } from '~/stores/providerStore'
+const providerStore = useProviderStore()
 let nextId = 20
-const media = ref<MediaPost[]>([
-    {
-        id: 1,
-        title: 'How to Build a Consistent Morning Wellness Routine',
-        type: 'video',
-        description: 'A step-by-step guide to creating a powerful morning routine that includes movement, mindfulness, and nutrition habits.',
-        publishedDate: '2026-07-01',
-        views: 4820,
-        likes: 312,
-        comments: 47,
-        duration: '14:32',
-        status: 'published',
-        tags: ['wellness', 'morning', 'habits']
-    },
-    {
-        id: 2,
-        title: 'The Science of Stress: Understanding Your Body\'s Response',
-        type: 'podcast',
-        description: 'In this episode, we deep-dive into how chronic stress affects your hormones, immune system, and long-term health — and what you can do about it.',
-        publishedDate: '2026-06-24',
-        views: 2910,
-        likes: 189,
-        comments: 31,
-        duration: '42:17',
-        status: 'published',
-        tags: ['stress', 'science', 'health']
-    },
-    {
-        id: 3,
-        title: '5 Nutrition Myths Debunked by a Registered Dietitian',
-        type: 'article',
-        description: 'We bust the most common nutrition myths that are holding people back from their health goals, backed by the latest research.',
-        publishedDate: '2026-06-18',
-        views: 7340,
-        likes: 504,
-        comments: 93,
-        readTime: '6 min',
-        status: 'published',
-        tags: ['nutrition', 'myths', 'diet']
-    },
-    {
-        id: 4,
-        title: 'Corporate Wellness 101: How to Get Leadership Buy-In',
-        type: 'article',
-        description: 'A practical guide for HR managers and wellness champions on building the business case for a workplace wellness program.',
-        publishedDate: '2026-06-10',
-        views: 3210,
-        likes: 228,
-        comments: 42,
-        readTime: '8 min',
-        status: 'published',
-        tags: ['corporate', 'leadership', 'wellness']
-    },
-    {
-        id: 5,
-        title: 'Breathwork for Anxiety Relief — Live Demo',
-        type: 'video',
-        description: 'Join me for a live 10-minute guided breathwork session designed to calm the nervous system and reduce acute anxiety.',
-        publishedDate: '2026-07-05',
-        views: 9100,
-        likes: 840,
-        comments: 118,
-        duration: '10:05',
-        status: 'published',
-        tags: ['breathwork', 'anxiety', 'live']
-    },
-    {
-        id: 6,
-        title: 'EP. 12 — Gut Health with Dr. Maya Torres',
-        type: 'podcast',
-        description: 'Functional medicine expert Dr. Torres shares how gut microbiome health connects to mental clarity, mood, and energy.',
-        publishedDate: '2026-07-08',
-        views: 1540,
-        likes: 102,
-        comments: 18,
-        duration: '58:43',
-        status: 'published',
-        tags: ['gut-health', 'microbiome', 'interview']
-    },
-    {
-        id: 7,
-        title: 'Sleep Optimization: The 4 Pillars of Deep Rest',
-        type: 'article',
-        description: 'Discover the four key factors that determine sleep quality and evidence-based strategies to optimize each one.',
-        publishedDate: '2026-05-30',
-        views: 5870,
-        likes: 413,
-        comments: 67,
-        readTime: '10 min',
-        status: 'published',
-        tags: ['sleep', 'recovery', 'optimization']
-    },
-    {
-        id: 8,
-        title: 'Mindfulness at Work: A Corporate Training Preview',
-        type: 'video',
-        description: 'An exclusive sneak peek into our corporate mindfulness workshop — techniques your team can use immediately in the office.',
-        publishedDate: '2026-07-10',
-        views: 620,
-        likes: 57,
-        comments: 9,
-        duration: '8:15',
-        status: 'draft',
-        tags: ['mindfulness', 'corporate', 'preview']
-    },
-    {
-        id: 9,
-        title: 'EP. 13 — Building Resilience Through Physical Training',
-        type: 'podcast',
-        description: 'Sports psychologist and strength coach discusses how physical challenges build mental toughness and emotional regulation.',
-        publishedDate: '2026-07-15',
-        views: 0,
-        likes: 0,
-        comments: 0,
-        duration: '51:20',
-        status: 'draft',
-        tags: ['resilience', 'fitness', 'mental-health']
-    },
-    {
-        id: 10,
-        title: 'Plant-Based Meal Prep for Busy Professionals',
-        type: 'article',
-        description: 'Quick, delicious, and nutrient-dense plant-based meal prep ideas that take less than 30 minutes on a Sunday.',
-        publishedDate: '2026-05-12',
-        views: 11200,
-        likes: 920,
-        comments: 145,
-        readTime: '7 min',
-        status: 'archived',
-        tags: ['plant-based', 'meal-prep', 'nutrition']
-    }
-])
+
+const media = computed({
+    get: () => providerStore.media as MediaPost[],
+    set: (val) => { providerStore.media = val as any }
+})
 
 // ============================================================================
 // Lookups
@@ -175,13 +50,13 @@ const typeIcons: Record<MediaPost['type'], string> = {
     article: 'i-lucide-file-text'
 }
 
-const typeColors: Record<MediaPost['type'], string> = {
+const typeColors: Record<MediaPost['type'], any> = {
     video: 'red',
     podcast: 'purple',
     article: 'sky'
 }
 
-const statusColors: Record<MediaPost['status'], string> = {
+const statusColors: Record<MediaPost['status'], any> = {
     published: 'success',
     draft: 'neutral',
     archived: 'warning'
@@ -207,7 +82,7 @@ function handleArchive(post: MediaPost) {
 }
 
 function handleDelete(post: MediaPost) {
-    media.value = media.value.filter(p => p.id !== post.id)
+    media.value = media.value?.filter(p => p.id !== post.id) ?? []
     toast.add({ title: 'Post deleted', color: 'error' })
 }
 
@@ -347,7 +222,7 @@ function clearFilters() {
 }
 
 const filteredMedia = computed(() => {
-    let result = media.value
+    let result = media.value ?? []
     result = result.filter(p =>
         filter.value.type.includes(p.type) &&
         filter.value.status.includes(p.status)
@@ -432,8 +307,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         const now = new Date().toISOString().slice(0, 10)
 
         if (editingId.value !== null) {
-            const index = media.value.findIndex(p => p.id === editingId.value)
-            if (index !== -1) {
+            const index = media.value?.findIndex(p => p.id === editingId.value) ?? -1
+            if (index !== -1 && media.value) {
                 const existing = media.value[index]!
                 media.value[index] = {
                     ...existing,
@@ -449,7 +324,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             }
             toast.add({ title: 'Post updated', description: `"${event.data.title}" was saved.`, color: 'success' })
         } else {
-            media.value.unshift({
+            media.value?.unshift({
                 id: nextId++,
                 title: event.data.title,
                 type: event.data.type,
@@ -478,7 +353,6 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 // Page meta
 // ============================================================================
 definePageMeta({
-    title: 'Media',
     isTable: true
 })
 </script>
@@ -510,17 +384,11 @@ definePageMeta({
         <UButton icon="i-lucide-plus" label="New Media Post" @click="openCreateModal" />
     </Teleport>
 
-    <!-- Table View -->
-    <UTable v-if="viewMode === 'table'" sticky :data="pagedMedia" :columns="columns" ref="table" class="flex-1">
-        <template #empty-state-content>
-            <div class="flex flex-col items-center justify-center py-10 text-center">
-                <div
-                    class="flex items-center justify-center size-16 rounded-full bg-primary/10 text-primary ring-4 ring-primary/20 mb-3">
-                    <UIcon name="i-lucide-clapperboard" class="size-8" />
-                </div>
-                <h3 class="text-lg font-semibold text-default">No media posts yet</h3>
-                <p class="text-sm text-muted mt-1">Create your first video, podcast, or article to get started.</p>
-            </div>
+
+        <!-- Table View -->
+        <UTable v-if="viewMode === 'table'" sticky :data="pagedMedia" :columns="columns" ref="table" class="flex-1">
+        <template #empty>
+            <UEmpty variant="naked" icon="i-lucide-clapperboard" title="No media posts found" description="Create your first video, podcast, or article to get started." />
         </template>
     </UTable>
 
@@ -531,18 +399,12 @@ definePageMeta({
 
     <!-- Cards View -->
     <template v-else-if="viewMode === 'cards'">
-        <div class="flex-1 flex flex-col overflow-y-auto scrollbar">
-            <div v-if="pagedMedia.length === 0" class="flex flex-col items-center justify-center flex-1 py-20">
-                <div
-                    class="flex items-center justify-center size-16 rounded-full bg-primary/10 text-primary ring-4 ring-primary/20 mb-3">
-                    <UIcon name="i-lucide-clapperboard" class="size-8" />
-                </div>
-                <h3 class="text-lg font-semibold text-default">No media posts found</h3>
-                <p class="text-sm text-muted mt-1">Try adjusting your search or filters.</p>
-                <UButton icon="i-lucide-plus" label="New Media Post" class="mt-4" @click="openCreateModal" />
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 p-4 sm:p-6">
+        <div class="flex-1 flex flex-col overflow-y-auto scrollbar" :class="[media.length === 0 ? 'justify-center' : '']">
+            <template v-if="media.length === 0">
+                <UEmpty variant="naked" icon="i-lucide-clapperboard" title="No media posts found" description="Create your first video, podcast, or article to get started." />
+            </template>
+            <template v-else>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 p-4 sm:p-6">
                 <UCard v-for="post in pagedMedia" :key="post.id" variant="subtle"
                     :ui="{ root: 'flex flex-col', body: 'flex-1 flex flex-col gap-3' }" class="shadow-sm">
 
@@ -617,14 +479,14 @@ definePageMeta({
                     <!-- Tags footer -->
                     <template #footer>
                         <div class="flex items-center gap-1.5 flex-wrap">
-                            <UBadge v-for="tag in post.tags.slice(0, 3)" :key="tag" color="neutral" variant="subtle"
-                                size="sm">
+                            <UBadge v-for="tag in post.tags.slice(0, 3)" :key="tag" color="neutral" variant="subtle" size="sm">
                                 #{{ tag }}
                             </UBadge>
                         </div>
                     </template>
                 </UCard>
-            </div>
+                </div>
+            </template>
         </div>
 
         <div v-if="filteredMedia.length > pageSize" class="mt-auto flex justify-center py-4 border-t border-default">
@@ -634,7 +496,7 @@ definePageMeta({
     </template>
 
     <!-- New / Edit Modal -->
-    <UModal v-model:open="open" :title="editingId !== null ? 'Edit media post' : 'New media post'">
+    <UModal v-model:open="open" :title="editingId !== null ? 'Edit media' : 'New media'">
         <template #body>
             <UForm ref="formRef" :schema="schema" :state="state" class="space-y-3" @submit="onSubmit">
                 <div class="grid grid-cols-2 gap-3">

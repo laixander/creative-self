@@ -113,11 +113,6 @@ function removeDoc(credential: Credential) {
     credential.fileName = undefined
     toast.add({ title: 'Document removed', description: credential.name, color: 'neutral' })
 }
-
-// ============================================================================
-// Page meta
-// ============================================================================
-definePageMeta({ title: 'Profile' })
 </script>
 
 <template>

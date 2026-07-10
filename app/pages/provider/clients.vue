@@ -32,182 +32,13 @@ interface Client {
 // ============================================================================
 // Data
 // ============================================================================
-const clients = ref<Client[]>([
-    {
-        id: 1,
-        company: 'Northwind Labs',
-        industry: 'Technology',
-        contactName: 'Sarah Chen',
-        contactEmail: 'schen@northwindlabs.com',
-        employees: 320,
-        location: 'San Francisco, CA',
-        status: 'active',
-        totalBookings: 8,
-        completedBookings: 6,
-        cancelledBookings: 0,
-        totalParticipants: 340,
-        totalSpend: 18200,
-        lastBookingDate: '2026-07-13',
-        memberSince: '2025-02-10'
-    },
-    {
-        id: 2,
-        company: 'Helio Finance',
-        industry: 'Finance',
-        contactName: 'Marcus Reid',
-        contactEmail: 'mreid@heliofinance.com',
-        employees: 150,
-        location: 'New York, NY',
-        status: 'active',
-        totalBookings: 5,
-        completedBookings: 4,
-        cancelledBookings: 1,
-        totalParticipants: 210,
-        totalSpend: 11400,
-        lastBookingDate: '2026-07-22',
-        memberSince: '2025-04-18'
-    },
-    {
-        id: 3,
-        company: 'Apex Digital',
-        industry: 'Marketing',
-        contactName: 'Jenna Park',
-        contactEmail: 'jpark@apexdigital.io',
-        employees: 80,
-        location: 'Austin, TX',
-        status: 'active',
-        totalBookings: 3,
-        completedBookings: 2,
-        cancelledBookings: 0,
-        totalParticipants: 95,
-        totalSpend: 4800,
-        lastBookingDate: '2026-07-28',
-        memberSince: '2025-06-01'
-    },
-    {
-        id: 4,
-        company: 'Blueridge Partners',
-        industry: 'Consulting',
-        contactName: 'Daniel Osei',
-        contactEmail: 'dosei@blueridge.com',
-        employees: 500,
-        location: 'Chicago, IL',
-        status: 'active',
-        totalBookings: 12,
-        completedBookings: 10,
-        cancelledBookings: 1,
-        totalParticipants: 820,
-        totalSpend: 52000,
-        lastBookingDate: '2026-08-05',
-        memberSince: '2024-11-15'
-    },
-    {
-        id: 5,
-        company: 'Solaris Group',
-        industry: 'Energy',
-        contactName: 'Priya Menon',
-        contactEmail: 'pmenon@solarisgroup.com',
-        employees: 220,
-        location: 'Houston, TX',
-        status: 'inactive',
-        totalBookings: 4,
-        completedBookings: 4,
-        cancelledBookings: 0,
-        totalParticipants: 180,
-        totalSpend: 7600,
-        lastBookingDate: '2026-06-18',
-        memberSince: '2025-01-20'
-    },
-    {
-        id: 6,
-        company: 'Crestline Media',
-        industry: 'Media',
-        contactName: 'Tom Hargreaves',
-        contactEmail: 'tom@crestlinemedia.com',
-        employees: 60,
-        location: 'Los Angeles, CA',
-        status: 'inactive',
-        totalBookings: 2,
-        completedBookings: 2,
-        cancelledBookings: 0,
-        totalParticipants: 48,
-        totalSpend: 2400,
-        lastBookingDate: '2026-06-25',
-        memberSince: '2025-05-12'
-    },
-    {
-        id: 7,
-        company: 'Veritas Capital',
-        industry: 'Finance',
-        contactName: 'Olivia Brooks',
-        contactEmail: 'obrooks@veritascap.com',
-        employees: 90,
-        location: 'Boston, MA',
-        status: 'active',
-        totalBookings: 6,
-        completedBookings: 4,
-        cancelledBookings: 0,
-        totalParticipants: 310,
-        totalSpend: 19800,
-        lastBookingDate: '2026-07-30',
-        memberSince: '2025-03-05'
-    },
-    {
-        id: 8,
-        company: 'Ironclad Systems',
-        industry: 'Engineering',
-        contactName: 'Ben Nakamura',
-        contactEmail: 'bnakamura@ironclad.io',
-        employees: 175,
-        location: 'Seattle, WA',
-        status: 'inactive',
-        totalBookings: 3,
-        completedBookings: 3,
-        cancelledBookings: 0,
-        totalParticipants: 145,
-        totalSpend: 6900,
-        lastBookingDate: '2026-06-10',
-        memberSince: '2025-02-28'
-    },
-    {
-        id: 9,
-        company: 'Luminary Co.',
-        industry: 'Retail',
-        contactName: 'Aisha Williams',
-        contactEmail: 'awilliams@luminaryco.com',
-        employees: 45,
-        location: 'Portland, OR',
-        status: 'prospect',
-        totalBookings: 1,
-        completedBookings: 0,
-        cancelledBookings: 1,
-        totalParticipants: 12,
-        totalSpend: 0,
-        lastBookingDate: '2026-07-03',
-        memberSince: '2026-06-15'
-    },
-    {
-        id: 10,
-        company: 'Zenith Consulting',
-        industry: 'Consulting',
-        contactName: 'Ryan Walsh',
-        contactEmail: 'rwalsh@zenithco.com',
-        employees: 400,
-        location: 'Denver, CO',
-        status: 'active',
-        totalBookings: 9,
-        completedBookings: 6,
-        cancelledBookings: 0,
-        totalParticipants: 540,
-        totalSpend: 37200,
-        lastBookingDate: '2026-08-12',
-        memberSince: '2024-12-01'
-    }
-])
+import { useProviderStore } from '~/stores/providerStore'
+const providerStore = useProviderStore()
+const clients = computed(() => providerStore.clients)
 
 const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
 
-const statusColors: Record<Client['status'], string> = {
+const statusColors: Record<Client['status'], any> = {
     active: 'success',
     inactive: 'neutral',
     prospect: 'warning'
@@ -358,16 +189,24 @@ const statusOptions = [
     { label: 'Prospect', value: 'prospect' }
 ]
 
-const industryOptions = [...new Set(clients.value.map(c => c.industry))].map(i => ({ label: i, value: i }))
+const industryOptions = computed(() =>
+    [...new Set(clients.value.map(c => c.industry))].map(i => ({ label: i, value: i }))
+)
 
 const filter = ref({
     status: statusOptions.map(s => s.value),
-    industry: industryOptions.map(i => i.value)
+    industry: [] as string[]
 })
+
+watch(industryOptions, (opts) => {
+    if (filter.value.industry.length === 0) {
+        filter.value.industry = opts.map(i => i.value)
+    }
+}, { immediate: true })
 
 function clearFilters() {
     filter.value.status = statusOptions.map(s => s.value)
-    filter.value.industry = industryOptions.map(i => i.value)
+    filter.value.industry = industryOptions.value.map(i => i.value)
 }
 
 const filteredClients = computed(() => {
@@ -400,7 +239,7 @@ watch(filteredClients, () => { page.value = 1 })
 const activeFilterCount = computed(() => {
     let count = 0
     if (filter.value.status.length < statusOptions.length) count++
-    if (filter.value.industry.length < industryOptions.length) count++
+    if (filter.value.industry.length < industryOptions.value.length) count++
     return count
 })
 
@@ -408,7 +247,6 @@ const activeFilterCount = computed(() => {
 // Page meta
 // ============================================================================
 definePageMeta({
-    title: 'Clients',
     isTable: true
 })
 </script>
@@ -439,125 +277,116 @@ definePageMeta({
         <AppViewToggle v-model="viewMode" />
     </Teleport>
 
-    <!-- Table View -->
-    <UTable v-if="viewMode === 'table'" sticky :data="pagedClients" :columns="columns" ref="table" class="flex-1">
-        <template #empty-state-content>
-            <div class="flex flex-col items-center justify-center py-10 text-center">
-                <div
-                    class="flex items-center justify-center size-16 rounded-full bg-primary/10 text-primary ring-4 ring-primary/20 mb-3">
-                    <UIcon name="i-lucide-building-2" class="size-8" />
-                </div>
-                <h3 class="text-lg font-semibold text-default">No clients found</h3>
-                <p class="text-sm text-muted mt-1">Try adjusting your search or filters.</p>
+
+        <template v-if="viewMode === 'table'">
+            <!-- Table View -->
+            <UTable sticky :data="pagedClients" :columns="columns" ref="table" class="flex-1">
+                <template #empty>
+                    <UEmpty variant="naked" icon="i-lucide-building-2" title="No clients found" description="When you start serving companies, they will appear here." />
+                </template>
+            </UTable>
+
+            <div v-if="filteredClients.length > pageSize" class="flex justify-center py-4 border-t border-default">
+                <UPagination v-model:page="page" :total="filteredClients.length" :items-per-page="pageSize" variant="subtle" />
             </div>
         </template>
-    </UTable>
 
-    <div v-if="viewMode === 'table' && filteredClients.length > pageSize"
-        class="flex justify-center py-4 border-t border-default">
-        <UPagination v-model:page="page" :total="filteredClients.length" :items-per-page="pageSize" variant="subtle" />
-    </div>
+        <!-- Cards View -->
+        <template v-else-if="viewMode === 'cards'">
+            <div class="flex-1 flex flex-col overflow-y-auto scrollbar" :class="[clients.length === 0 ? 'justify-center' : '']">
+                <template v-if="clients.length === 0">
+                    <UEmpty variant="naked" icon="i-lucide-building-2" title="No clients found" description="When you start serving companies, they will appear here." />
+                </template>
+                <template v-else>
 
-    <!-- Cards View -->
-    <template v-else-if="viewMode === 'cards'">
-        <div class="flex-1 flex flex-col overflow-y-auto scrollbar">
-            <div v-if="pagedClients.length === 0" class="flex flex-col items-center justify-center flex-1 py-20">
-                <div
-                    class="flex items-center justify-center size-16 rounded-full bg-primary/10 text-primary ring-4 ring-primary/20 mb-3">
-                    <UIcon name="i-lucide-building-2" class="size-8" />
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 p-4 sm:p-6">
+                    <UCard v-for="client in pagedClients" :key="client.id" variant="subtle"
+                        :ui="{ root: 'flex flex-col', body: 'flex-1 flex flex-col gap-4 sm:gap-6' }" class="shadow-sm">
+
+                        <!-- Card Header -->
+                        <template #header>
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                                        <UIcon :name="industryIcons[client.industry] ?? 'i-lucide-building-2'"
+                                            class="text-primary text-base" />
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="font-semibold text-highlighted truncate">{{ client.company }}</div>
+                                        <div class="text-xs text-muted">{{ client.industry }}</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <UBadge :color="statusColors[client.status]" variant="subtle" size="sm"
+                                        class="capitalize">
+                                        {{ client.status }}
+                                    </UBadge>
+                                    <AppDropdownMenu :items="getDropdownItems(client)" size="sm"
+                                        trigger-icon="i-lucide-more-vertical" trigger-variant="ghost"
+                                        trigger-color="neutral" trigger-size="sm"
+                                        :content="{ align: 'end', side: 'bottom', sideOffset: 4 }" />
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Contact info -->
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2 text-sm">
+                                <UIcon name="i-lucide-user" class="text-muted shrink-0 size-3.5" />
+                                <span class="text-highlighted truncate">{{ client.contactName }}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs text-muted">
+                                <UIcon name="i-lucide-mail" class="shrink-0 size-3.5" />
+                                <span class="truncate">{{ client.contactEmail }}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs text-muted">
+                                <UIcon name="i-lucide-map-pin" class="shrink-0 size-3.5" />
+                                <span class="truncate">{{ client.location }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Booking stats -->
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="flex flex-col items-center gap-0.5 rounded-lg bg-elevated px-2 py-2">
+                                <span class="text-base font-bold text-highlighted">{{ client.totalBookings }}</span>
+                                <span class="text-[10px] text-muted uppercase tracking-wider font-medium">Bookings</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-0.5 rounded-lg bg-elevated px-2 py-2">
+                                <span class="text-base font-bold text-highlighted">{{ client.totalParticipants }}</span>
+                                <span class="text-[10px] text-muted uppercase tracking-wider font-medium">Attendees</span>
+                            </div>
+                            <div class="flex flex-col items-center gap-0.5 rounded-lg bg-elevated px-2 py-2">
+                                <span class="text-base font-bold text-success">{{ formatter.format(client.totalSpend)
+                                }}</span>
+                                <span class="text-[10px] text-muted uppercase tracking-wider font-medium">Spend</span>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <template #footer>
+                            <div class="flex items-center justify-between text-xs text-muted">
+                                <div class="flex items-center gap-1.5">
+                                    <UIcon name="i-lucide-check-circle" class="text-success size-3.5" />
+                                    <span>{{ client.completedBookings }} completed</span>
+                                    <template v-if="client.cancelledBookings > 0">
+                                        <span class="text-default/30">·</span>
+                                        <UIcon name="i-lucide-x-circle" class="text-error size-3.5" />
+                                        <span class="text-error">{{ client.cancelledBookings }} cancelled</span>
+                                    </template>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <UIcon name="i-lucide-calendar" class="size-3.5" />
+                                    <span>{{ client.lastBookingDate }}</span>
+                                </div>
+                            </div>
+                        </template>
+                    </UCard>
                 </div>
-                <h3 class="text-lg font-semibold text-default">No clients found</h3>
-                <p class="text-sm text-muted mt-1">Try adjusting your search or filters.</p>
+                </template>
             </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 p-4 sm:p-6">
-                <UCard v-for="client in pagedClients" :key="client.id" variant="subtle"
-                    :ui="{ root: 'flex flex-col', body: 'flex-1 flex flex-col gap-4 sm:gap-6' }" class="shadow-sm">
-
-                    <!-- Card Header -->
-                    <template #header>
-                        <div class="flex items-center justify-between gap-3">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                                    <UIcon :name="industryIcons[client.industry] ?? 'i-lucide-building-2'"
-                                        class="text-primary text-base" />
-                                </div>
-                                <div class="min-w-0">
-                                    <div class="font-semibold text-highlighted truncate">{{ client.company }}</div>
-                                    <div class="text-xs text-muted">{{ client.industry }}</div>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-1 shrink-0">
-                                <UBadge :color="statusColors[client.status]" variant="subtle" size="sm"
-                                    class="capitalize">
-                                    {{ client.status }}
-                                </UBadge>
-                                <AppDropdownMenu :items="getDropdownItems(client)" size="sm"
-                                    trigger-icon="i-lucide-more-vertical" trigger-variant="ghost"
-                                    trigger-color="neutral" trigger-size="sm"
-                                    :content="{ align: 'end', side: 'bottom', sideOffset: 4 }" />
-                            </div>
-                        </div>
-                    </template>
-
-                    <!-- Contact info -->
-                    <div class="space-y-2">
-                        <div class="flex items-center gap-2 text-sm">
-                            <UIcon name="i-lucide-user" class="text-muted shrink-0 size-3.5" />
-                            <span class="text-highlighted truncate">{{ client.contactName }}</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-xs text-muted">
-                            <UIcon name="i-lucide-mail" class="shrink-0 size-3.5" />
-                            <span class="truncate">{{ client.contactEmail }}</span>
-                        </div>
-                        <div class="flex items-center gap-2 text-xs text-muted">
-                            <UIcon name="i-lucide-map-pin" class="shrink-0 size-3.5" />
-                            <span class="truncate">{{ client.location }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Booking stats -->
-                    <div class="grid grid-cols-3 gap-2">
-                        <div class="flex flex-col items-center gap-0.5 rounded-lg bg-elevated px-2 py-2">
-                            <span class="text-base font-bold text-highlighted">{{ client.totalBookings }}</span>
-                            <span class="text-[10px] text-muted uppercase tracking-wider font-medium">Bookings</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-0.5 rounded-lg bg-elevated px-2 py-2">
-                            <span class="text-base font-bold text-highlighted">{{ client.totalParticipants }}</span>
-                            <span class="text-[10px] text-muted uppercase tracking-wider font-medium">Attendees</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-0.5 rounded-lg bg-elevated px-2 py-2">
-                            <span class="text-base font-bold text-success">{{ formatter.format(client.totalSpend)
-                            }}</span>
-                            <span class="text-[10px] text-muted uppercase tracking-wider font-medium">Spend</span>
-                        </div>
-                    </div>
-
-                    <!-- Footer -->
-                    <template #footer>
-                        <div class="flex items-center justify-between text-xs text-muted">
-                            <div class="flex items-center gap-1.5">
-                                <UIcon name="i-lucide-check-circle" class="text-success size-3.5" />
-                                <span>{{ client.completedBookings }} completed</span>
-                                <template v-if="client.cancelledBookings > 0">
-                                    <span class="text-default/30">·</span>
-                                    <UIcon name="i-lucide-x-circle" class="text-error size-3.5" />
-                                    <span class="text-error">{{ client.cancelledBookings }} cancelled</span>
-                                </template>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                <UIcon name="i-lucide-calendar" class="size-3.5" />
-                                <span>{{ client.lastBookingDate }}</span>
-                            </div>
-                        </div>
-                    </template>
-                </UCard>
+            
+            <div v-if="filteredClients.length > pageSize" class="mt-auto flex justify-center py-4 border-t border-default">
+                <UPagination v-model:page="page" :total="filteredClients.length" :items-per-page="pageSize" variant="subtle" />
             </div>
-        </div>
-
-        <div v-if="filteredClients.length > pageSize" class="mt-auto flex justify-center py-4 border-t border-default">
-            <UPagination v-model:page="page" :total="filteredClients.length" :items-per-page="pageSize"
-                variant="subtle" />
-        </div>
-    </template>
+        </template>
 </template>

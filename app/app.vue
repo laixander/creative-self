@@ -11,8 +11,8 @@ useHead({
   }
 })
 
-const title = 'Creative Self'
-const description = 'Just another web app for a guy who likes ' + ' '.repeat(80) + ' to do stuff.'
+const title = 'App Sandbox'
+const description = 'Playground for Nuxt UI.'
 
 useSeoMeta({
   title,
@@ -22,6 +22,19 @@ useSeoMeta({
   ogImage: '',
   twitterCard: ''
 })
+
+const appConfig = useAppConfig()
+const settings = useSettingsStore()
+
+if (import.meta.client) {
+  // Sync initial persisted colors
+  appConfig.ui.colors.primary = settings.themePrimary
+  appConfig.ui.colors.neutral = settings.themeNeutral
+
+  // Watch for changes made in Settings
+  watch(() => settings.themePrimary, (val) => appConfig.ui.colors.primary = val)
+  watch(() => settings.themeNeutral, (val) => appConfig.ui.colors.neutral = val)
+}
 </script>
 
 <template>
@@ -29,5 +42,6 @@ useSeoMeta({
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
+    <DemoFab />
   </UApp>
 </template>

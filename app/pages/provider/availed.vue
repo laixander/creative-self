@@ -25,118 +25,12 @@ interface BookingRow {
 // ============================================================================
 // Data
 // ============================================================================
-const bookings = ref<BookingRow[]>([
-    {
-        id: 1,
-        company: 'Northwind Labs',
-        offering: 'Mindful Mondays — 8 Week Program',
-        image: '/img/stockphoto_2.jpg',
-        date: '2026-07-13',
-        participants: 45,
-        price: 2400,
-        rating: 4.2,
-        status: 'confirmed'
-    },
-    {
-        id: 2,
-        company: 'Helio Finance',
-        offering: 'Stress Resilience Workshop',
-        image: '/img/stockphoto_3.jpg',
-        date: '2026-07-22',
-        participants: 30,
-        price: 1800,
-        rating: 4.1,
-        status: 'confirmed'
-    },
-    {
-        id: 3,
-        company: 'Apex Digital',
-        offering: 'HIIT Bootcamp',
-        image: '/img/stockphoto_4.jpg',
-        date: '2026-07-28',
-        participants: 15,
-        price: 1500,
-        rating: 4.5,
-        status: 'confirmed'
-    },
-    {
-        id: 4,
-        company: 'Blueridge Partners',
-        offering: 'Corporate Mindfulness Seminar',
-        image: '/img/stockphoto_11.jpg',
-        date: '2026-08-05',
-        participants: 120,
-        price: 15000,
-        rating: 4.8,
-        status: 'confirmed'
-    },
-    {
-        id: 5,
-        company: 'Solaris Group',
-        offering: 'Morning Yoga Flow',
-        image: '/img/stockphoto_5.jpg',
-        date: '2026-06-18',
-        participants: 50,
-        price: 3000,
-        rating: 4.6,
-        status: 'completed'
-    },
-    {
-        id: 6,
-        company: 'Crestline Media',
-        offering: 'Strength Training 101',
-        image: '/img/stockphoto_9.jpg',
-        date: '2026-06-25',
-        participants: 8,
-        price: 1200,
-        rating: 4.0,
-        status: 'completed'
-    },
-    {
-        id: 7,
-        company: 'Veritas Capital',
-        offering: 'Gut Health Fundamentals',
-        image: '/img/stockphoto_18.jpg',
-        date: '2026-07-30',
-        participants: 60,
-        price: 4800,
-        rating: 4.3,
-        status: 'confirmed'
-    },
-    {
-        id: 8,
-        company: 'Ironclad Systems',
-        offering: 'Breathwork for Beginners',
-        image: '/img/stockphoto_15.jpg',
-        date: '2026-06-10',
-        participants: 35,
-        price: 2000,
-        rating: 4.7,
-        status: 'completed'
-    },
-    {
-        id: 9,
-        company: 'Luminary Co.',
-        offering: 'Kettlebell Core Crush',
-        image: '/img/stockphoto_17.jpg',
-        date: '2026-07-03',
-        participants: 12,
-        price: 0,
-        rating: 0,
-        status: 'cancelled'
-    },
-    {
-        id: 10,
-        company: 'Zenith Consulting',
-        offering: 'Sleep Hygiene Masterclass',
-        image: '/img/stockphoto_7.jpg',
-        date: '2026-08-12',
-        participants: 80,
-        price: 6400,
-        rating: 4.9,
-        status: 'confirmed'
-    }
-])
+import { useProviderStore } from '~/stores/providerStore'
+const providerStore = useProviderStore()
+const bookings = computed({
+    get: () => providerStore.availedBookings as BookingRow[],
+    set: (val) => { providerStore.availedBookings = val as any }
+})
 
 const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })
 
@@ -153,6 +47,12 @@ const completedBookings = computed(() => bookings.value.filter(b => b.status ===
 const completedCount = computed(() => completedBookings.value.length)
 const participantsReached = computed(() => completedBookings.value.reduce((sum, b) => sum + b.participants, 0))
 const totalRevenue = computed(() => completedBookings.value.reduce((sum, b) => sum + b.price, 0))
+
+const stats = computed(() => [
+    { label: 'Completed', value: completedCount.value, icon: 'i-lucide-check-circle', color: 'green' },
+    { label: 'Participants Reached', value: participantsReached.value, icon: 'i-lucide-users', color: 'amber' },
+    { label: 'Revenue', value: formatter.format(totalRevenue.value), icon: 'i-lucide-banknote', color: 'teal' }
+])
 
 // ============================================================================
 // Actions
@@ -298,7 +198,6 @@ const activeFilterCount = computed(() =>
 // Page meta
 // ============================================================================
 definePageMeta({
-    title: 'Availed',
     isTable: true
 })
 </script>
@@ -325,37 +224,35 @@ definePageMeta({
         <AppViewToggle v-model="viewMode" />
     </Teleport>
 
-    <!-- ============================================================
-         Summary stat cards (always visible above the list/table)
-         ============================================================ -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 sm:p-6 border-b border-default shrink-0">
-        <UCard variant="subtle" :ui="{ body: 'flex flex-col gap-1 p-4 sm:p-5' }">
-            <p class="text-[11px] font-semibold text-muted uppercase tracking-widest">Completed</p>
-            <p class="text-3xl font-bold text-highlighted">{{ completedCount }}</p>
-        </UCard>
-        <UCard variant="subtle" :ui="{ body: 'flex flex-col gap-1 p-4 sm:p-5' }">
-            <p class="text-[11px] font-semibold text-muted uppercase tracking-widest">Participants Reached</p>
-            <p class="text-3xl font-bold text-highlighted">{{ participantsReached }}</p>
-        </UCard>
-        <UCard variant="subtle" :ui="{ body: 'flex flex-col gap-1 p-4 sm:p-5' }">
-            <p class="text-[11px] font-semibold text-muted uppercase tracking-widest">Revenue</p>
-            <p class="text-3xl font-bold text-highlighted">{{ formatter.format(totalRevenue) }}</p>
-        </UCard>
-    </div>
 
-    <!-- ============================================================
-         Table view
-         ============================================================ -->
-    <UTable v-if="viewMode === 'table'" sticky :data="pagedBookings" :columns="bookingColumns" ref="table"
-        class="flex-1">
-        <template #empty-state-content>
-            <div class="flex flex-col items-center justify-center py-10 text-center">
-                <div class="flex items-center justify-center size-16 rounded-full bg-primary/10 text-primary ring-4 ring-primary/20 mb-3">
-                    <UIcon name="i-lucide-calendar-check" class="size-8" />
+        <!-- ============================================================
+             Summary stat cards (always visible above the list/table)
+             ============================================================ -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 sm:p-6 border-b border-default shrink-0">
+            <UCard v-for="stat in stats" :key="stat.label" variant="subtle" class="shadow-sm">
+                <div class="flex items-center gap-4">
+                    <div :class="[
+                        'p-3 rounded-xl squircle',
+                        `bg-${stat.color}-500/10`,
+                        `text-${stat.color}-500`
+                    ]">
+                        <UIcon :name="stat.icon" class="text-2xl flex" />
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-dimmed">{{ stat.label }}</p>
+                        <p class="text-2xl font-bold">{{ stat.value }}</p>
+                    </div>
                 </div>
-                <h3 class="text-lg font-semibold text-default">No bookings found</h3>
-                <p class="text-sm text-muted mt-1">Try adjusting your search or filters.</p>
-            </div>
+            </UCard>
+        </div>
+
+        <!-- ============================================================
+             Table view
+             ============================================================ -->
+        <UTable v-if="viewMode === 'table'" sticky :data="pagedBookings" :columns="bookingColumns" ref="table"
+            class="flex-1">
+        <template #empty>
+            <UEmpty variant="naked" icon="i-lucide-calendar-check" title="No availed bookings found" description="When an engagement is completed, it will appear here." />
         </template>
     </UTable>
 
@@ -368,19 +265,14 @@ definePageMeta({
          Cards view
          ============================================================ -->
     <template v-else-if="viewMode === 'cards'">
-        <div class="flex-1 flex flex-col overflow-y-auto scrollbar">
-            <div v-if="pagedBookings.length === 0"
-                class="flex flex-col items-center justify-center flex-1 py-20 text-center">
-                <div class="flex items-center justify-center size-16 rounded-full bg-primary/10 text-primary ring-4 ring-primary/20 mb-3">
-                    <UIcon name="i-lucide-calendar-check" class="size-8" />
-                </div>
-                <h3 class="text-lg font-semibold text-default">No bookings found</h3>
-                <p class="text-sm text-muted mt-1">Try adjusting your search or filters.</p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6">
-                <UCard v-for="booking in pagedBookings" :key="booking.id" variant="subtle"
-                    :ui="{ body: 'flex items-center gap-4' }" class="shadow-sm">
+        <div class="flex-1 flex flex-col overflow-y-auto scrollbar" :class="[bookings.length === 0 ? 'justify-center' : '']">
+            <template v-if="bookings.length === 0">
+                <UEmpty variant="naked" icon="i-lucide-calendar-check" title="No availed bookings found" description="When an engagement is completed, it will appear here." />
+            </template>
+            <template v-else>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6">
+                    <UCard v-for="booking in pagedBookings" :key="booking.id" variant="subtle"
+                        :ui="{ body: 'flex items-center gap-4' }" class="shadow-sm">
 
                     <!-- Thumbnail -->
                     <div class="size-16 rounded-lg overflow-hidden shrink-0 bg-elevated">
@@ -423,10 +315,12 @@ definePageMeta({
                         trigger-icon="i-lucide-more-vertical" trigger-variant="ghost" trigger-color="neutral"
                         trigger-size="sm" :content="{ align: 'end', side: 'bottom', sideOffset: 4 }" />
                 </UCard>
-            </div>
+                </div>
+            </template>
         </div>
 
-        <div v-if="filteredBookings.length > pageSize" class="mt-auto flex justify-center py-4 border-t border-default">
+        <div v-if="filteredBookings.length > pageSize"
+            class="mt-auto flex justify-center py-4 border-t border-default">
             <UPagination v-model:page="page" :total="filteredBookings.length" :items-per-page="pageSize"
                 variant="subtle" />
         </div>

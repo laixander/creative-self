@@ -4,6 +4,7 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/ui',
     '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt',
     '@nuxt/image'
   ],
 
@@ -14,10 +15,12 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   routeRules: {
-    '/': { prerender: true }
+    // '/': { prerender: true },
+    '/': { redirect: '/demo' },
+    '/demo/cards': { redirect: '/demo/cards/card-system' }
   },
 
-  compatibilityDate: '2026-06-30',
+  compatibilityDate: '2025-01-15',
 
   eslint: {
     config: {
@@ -25,6 +28,20 @@ export default defineNuxtConfig({
         commaDangle: 'never',
         braceStyle: '1tbs'
       }
+    }
+  },
+
+  vite: {
+    optimizeDeps: {
+      include: [
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+        '@vueuse/core',
+        'chart.js',
+        'pinia',
+        'vue-chartjs',
+        'zod',
+      ]
     }
   },
 

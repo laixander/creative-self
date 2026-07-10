@@ -1,24 +1,33 @@
-<!-- error.vue -->
 <script setup lang="ts">
 import type { NuxtError } from '#app'
+
+// ============================================================================
+// Error Page
+// ============================================================================
+// Nuxt 3's global error boundary — rendered for ALL unhandled errors
+// (404, 500, middleware errors, etc.). Does not use any layout.
+//
+// UError handles all rendering: status code, message, and clear button.
+// clearError() is called internally by UError when the button is clicked.
+// The auth middleware will redirect to /login if the user is not authenticated
+// after clearError({ redirect: '/' }) fires.
 
 const props = defineProps<{
     error: NuxtError
 }>()
-
-// Optional: log the error somewhere (e.g. to a monitoring service)
-console.error(props.error)
 </script>
 
 <template>
     <UApp>
-        <NuxtLayout>
-            <UError icon="i-lucide-file-x" :error="error" redirect="/provider" :clear="{
-                label: 'Back to home',
-                icon: 'i-lucide-arrow-left',
-                color: 'primary',
-                size: 'lg'
-            }" :ui="{ root: 'min-h-full' }" />
-        </NuxtLayout>
+        <UError :error="error" redirect="/">
+            <template #leading>
+                <div class="flex items-center justify-center gap-1.5 mb-2">
+                    <UIcon name="i-ph-codesandbox-logo-duotone" class="size-7 text-primary" />
+                    <span class="text-base font-black tracking-tight">
+                        Sand<span class="text-primary">Box</span>
+                    </span>
+                </div>
+            </template>
+        </UError>
     </UApp>
 </template>

@@ -27,241 +27,18 @@ interface CourseRow {
 // ============================================================================
 // Table data
 // ============================================================================
+import { useProviderStore } from '~/stores/providerStore'
+const providerStore = useProviderStore()
 let nextId = 20
-const data = ref<CourseRow[]>([
-    {
-        id: 1,
-        image: '/img/stockphoto_1.jpg',
-        title: 'Nutrition for Busy Professionals',
-        description: 'Learn quick, healthy meal prep strategies tailored for a hectic work schedule.',
-        category: 'nutrition',
-        type: 'online',
-        duration: '45 min',
-        price: 500,
-        maxParticipants: 20,
-        status: 'draft'
-    },
-    {
-        id: 2,
-        image: '/img/stockphoto_2.jpg',
-        title: 'Mindful Mondays — 8 Week Program',
-        description: 'Start your week with purpose through guided meditation and intention-setting practices.',
-        category: 'meditation',
-        type: 'online',
-        duration: '60 min',
-        price: 2400,
-        maxParticipants: 30,
-        status: 'published'
-    },
-    {
-        id: 3,
-        image: '/img/stockphoto_3.jpg',
-        title: 'Stress Resilience Workshop',
-        description: 'Develop actionable tools to manage workplace stress and build emotional resilience.',
-        category: 'stress-management',
-        type: 'hybrid',
-        duration: '90 min',
-        price: 1800,
-        maxParticipants: 25,
-        status: 'published'
-    },
-    {
-        id: 4,
-        image: '/img/stockphoto_4.jpg',
-        title: 'HIIT Bootcamp',
-        description: 'High-intensity interval training designed to maximize calorie burn and improve cardiovascular health.',
-        category: 'fitness',
-        type: 'in-person',
-        duration: '60 min',
-        price: 1500,
-        maxParticipants: 15,
-        status: 'published'
-    },
-    {
-        id: 5,
-        image: '/img/stockphoto_5.jpg',
-        title: 'Morning Yoga Flow',
-        description: 'An energizing vinyasa flow to awaken the body and center the mind before your day begins.',
-        category: 'fitness',
-        type: 'online',
-        duration: '30 min',
-        price: 300,
-        maxParticipants: 50,
-        status: 'published'
-    },
-    {
-        id: 6,
-        image: '/img/stockphoto_6.jpg',
-        title: 'Plant-Based Cooking Basics',
-        description: 'Master the fundamentals of delicious, nutrient-dense plant-based cooking in your own kitchen.',
-        category: 'nutrition',
-        type: 'hybrid',
-        duration: '120 min',
-        price: 2000,
-        maxParticipants: 10,
-        status: 'draft'
-    },
-    {
-        id: 7,
-        image: '/img/stockphoto_7.jpg',
-        title: 'Sleep Hygiene Masterclass',
-        description: 'Discover science-backed techniques to improve your sleep quality and wake up feeling refreshed.',
-        category: 'stress-management',
-        type: 'online',
-        duration: '60 min',
-        price: 800,
-        maxParticipants: 100,
-        status: 'published'
-    },
-    {
-        id: 8,
-        image: '/img/stockphoto_8.jpg',
-        title: 'Guided Sound Bath',
-        description: 'Immerse yourself in deeply relaxing frequencies and vibrations using crystal singing bowls.',
-        category: 'meditation',
-        type: 'in-person',
-        duration: '75 min',
-        price: 3500,
-        maxParticipants: 12,
-        status: 'archived'
-    },
-    {
-        id: 9,
-        image: '/img/stockphoto_9.jpg',
-        title: 'Strength Training 101',
-        description: 'Learn proper form and foundational movements for building lean muscle safely.',
-        category: 'fitness',
-        type: 'in-person',
-        duration: '60 min',
-        price: 1200,
-        maxParticipants: 8,
-        status: 'published'
-    },
-    {
-        id: 10,
-        image: '/img/stockphoto_10.jpg',
-        title: 'Emotional Eating Support Group',
-        description: 'A safe, guided space to explore the relationship between emotions and eating habits.',
-        category: 'nutrition',
-        type: 'online',
-        duration: '90 min',
-        price: 1000,
-        maxParticipants: 15,
-        status: 'published'
-    },
-    {
-        id: 11,
-        image: '/img/stockphoto_11.jpg',
-        title: 'Corporate Mindfulness Seminar',
-        description: 'Tailored mindfulness strategies to boost team focus, communication, and overall well-being.',
-        category: 'meditation',
-        type: 'hybrid',
-        duration: '4 hours',
-        price: 15000,
-        maxParticipants: 200,
-        status: 'published'
-    },
-    {
-        id: 12,
-        image: '/img/stockphoto_12.jpg',
-        title: 'Anxiety Reduction Techniques',
-        description: 'Practical grounding exercises and cognitive reframing tools to lower daily anxiety.',
-        category: 'stress-management',
-        type: 'online',
-        duration: '60 min',
-        price: 600,
-        maxParticipants: 50,
-        status: 'draft'
-    },
-    {
-        id: 13,
-        image: '/img/stockphoto_13.jpg',
-        title: 'Advanced Pilates',
-        description: 'A challenging core-focused workout utilizing advanced pilates techniques and equipment.',
-        category: 'fitness',
-        type: 'in-person',
-        duration: '55 min',
-        price: 2500,
-        maxParticipants: 10,
-        status: 'published'
-    },
-    {
-        id: 14,
-        image: '/img/stockphoto_14.jpg',
-        title: 'Macro Tracking Deep Dive',
-        description: 'Understand how to calculate, track, and adjust macronutrients for your specific goals.',
-        category: 'nutrition',
-        type: 'online',
-        duration: '45 min',
-        price: 400,
-        maxParticipants: 40,
-        status: 'archived'
-    },
-    {
-        id: 15,
-        image: '/img/stockphoto_15.jpg',
-        title: 'Breathwork for Beginners',
-        description: 'An introduction to conscious breathing techniques for immediate stress relief and clarity.',
-        category: 'meditation',
-        type: 'online',
-        duration: '30 min',
-        price: 200,
-        maxParticipants: 100,
-        status: 'published'
-    },
-    {
-        id: 16,
-        image: '/img/stockphoto_16.jpg',
-        title: 'Time Management for Stress Relief',
-        description: 'Learn how effective scheduling and prioritization can drastically reduce chronic stress.',
-        category: 'stress-management',
-        type: 'hybrid',
-        duration: '90 min',
-        price: 1200,
-        maxParticipants: 30,
-        status: 'draft'
-    },
-    {
-        id: 17,
-        image: '/img/stockphoto_17.jpg',
-        title: 'Kettlebell Core Crush',
-        description: 'A dynamic, full-body kettlebell circuit focused on building explosive core strength.',
-        category: 'fitness',
-        type: 'in-person',
-        duration: '45 min',
-        price: 1800,
-        maxParticipants: 12,
-        status: 'published'
-    },
-    {
-        id: 18,
-        image: '/img/stockphoto_18.jpg',
-        title: 'Gut Health Fundamentals',
-        description: 'Explore the microbiome and learn dietary changes to support optimal digestion and immunity.',
-        category: 'nutrition',
-        type: 'online',
-        duration: '60 min',
-        price: 800,
-        maxParticipants: 60,
-        status: 'published'
-    },
-    {
-        id: 19,
-        image: '/img/stockphoto_19.jpg',
-        title: 'Silent Retreat Weekend',
-        description: 'A fully immersive offline experience focused on deep meditation, silence, and self-reflection.',
-        category: 'meditation',
-        type: 'in-person',
-        duration: '48 hours',
-        price: 25000,
-        maxParticipants: 20,
-        status: 'draft'
-    }
-])
+
+const data = computed({
+    get: () => providerStore.offerings as CourseRow[],
+    set: (val) => { providerStore.offerings = val as any }
+})
 
 const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
 
-const typeColors: Record<CourseRow['type'], string> = {
+const typeColors: Record<CourseRow['type'], any> = {
     online: 'teal',
     hybrid: 'purple',
     'in-person': 'pink'
@@ -274,11 +51,29 @@ const categoryLabels: Record<CourseRow['category'], string> = {
     'stress-management': 'Stress Management'
 }
 
-const statusColors: Record<CourseRow['status'], string> = {
+const statusColors: Record<CourseRow['status'], any> = {
     published: 'success',
     draft: 'neutral',
     archived: 'warning'
 }
+
+import type { DropdownMenuItem } from '@nuxt/ui'
+const getDropdownItems = (course: CourseRow): DropdownMenuItem[] => [
+    { label: 'Edit', icon: 'i-lucide-pencil', onSelect: () => handleEdit(course) },
+    ...(course.status === 'draft' ? [{
+        label: 'Publish',
+        icon: 'i-lucide-upload',
+        color: 'success' as const,
+        onSelect: () => handlePublish(course)
+    }] : []),
+    ...(course.status === 'published' ? [{
+        label: 'Archive',
+        icon: 'i-lucide-archive',
+        color: 'warning' as const,
+        onSelect: () => handleArchive(course)
+    }] : []),
+    { label: 'Delete', icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: () => handleDelete(course) }
+]
 
 const columns: TableColumn<CourseRow>[] = [
     {
@@ -332,44 +127,16 @@ const columns: TableColumn<CourseRow>[] = [
     {
         id: 'actions',
         header: '',
-        cell: ({ row }) => {
-            const items = [
-                {
-                    label: 'Edit',
-                    icon: 'i-lucide-pencil',
-                    onSelect: () => handleEdit(row.original)
-                },
-                row.original.status === 'draft' && {
-                    label: 'Publish',
-                    icon: 'i-lucide-upload',
-                    color: 'success',
-                    onSelect: () => handlePublish(row.original)
-                },
-                row.original.status === 'published' && {
-                    label: 'Archive',
-                    icon: 'i-lucide-archive',
-                    color: 'warning',
-                    onSelect: () => handleArchive(row.original)
-                },
-                {
-                    label: 'Delete',
-                    icon: 'i-lucide-trash-2',
-                    color: 'error',
-                    onSelect: () => handleDelete(row.original)
-                }
-            ].filter(Boolean)
-
-            return h('div', { class: 'text-right' }, [
-                h(UDropdownMenu, { items, content: { align: 'end' }, size: 'sm' }, {
-                    default: () => h(UButton, {
-                        icon: 'i-lucide-ellipsis-vertical',
-                        color: 'neutral',
-                        variant: 'ghost',
-                        size: 'sm'
-                    })
+        cell: ({ row }) => h('div', { class: 'text-right' }, [
+            h(UDropdownMenu, { items: getDropdownItems(row.original), content: { align: 'end' }, size: 'sm' }, {
+                default: () => h(UButton, {
+                    icon: 'i-lucide-ellipsis-vertical',
+                    color: 'neutral',
+                    variant: 'ghost',
+                    size: 'sm'
                 })
-            ])
-        }
+            })
+        ])
     }
 ]
 
@@ -384,7 +151,7 @@ function handleArchive(course: CourseRow) {
 }
 
 function handleDelete(course: CourseRow) {
-    data.value = data.value.filter(c => c.id !== course.id)
+    data.value = data.value?.filter(c => c.id !== course.id) ?? []
     toast.add({ title: 'Offering deleted', color: 'error' })
 }
 
@@ -503,8 +270,8 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     try {
         if (editingId.value !== null) {
             // Update existing course
-            const index = data.value.findIndex(c => c.id === editingId.value)
-            if (index !== -1) {
+            const index = data.value?.findIndex(c => c.id === editingId.value) ?? -1
+            if (index !== -1 && data.value) {
                 const item = data.value[index]
                 if (item) {
                     data.value[index] = { ...item, ...event.data, id: item.id }
@@ -513,7 +280,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
             toast.add({ title: 'Offering updated', description: `"${event.data.title}" was saved.`, color: 'success' })
         } else {
             // Create new course
-            data.value.unshift({ id: nextId++, ...event.data })
+            data.value?.unshift({ id: nextId++, ...event.data })
             toast.add({ title: 'Offering created', description: `"${event.data.title}" was added.`, color: 'success' })
         }
 
@@ -528,29 +295,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 // Page meta
 // ============================================================================
 definePageMeta({
-    title: 'Offerings',
     isTable: true
 })
 
-// Common Logic
-import type { DropdownMenuItem } from '@nuxt/ui'
 
-const getDropdownItems = (course: CourseRow): DropdownMenuItem[] => [
-    { label: 'Edit', icon: 'i-lucide-pencil', onSelect: () => handleEdit(course) },
-    ...(course.status === 'draft' ? [{
-        label: 'Publish',
-        icon: 'i-lucide-upload',
-        color: 'success' as const,
-        onSelect: () => handlePublish(course)
-    }] : []),
-    ...(course.status === 'published' ? [{
-        label: 'Archive',
-        icon: 'i-lucide-archive',
-        color: 'warning' as const,
-        onSelect: () => handleArchive(course)
-    }] : []),
-    { label: 'Delete', icon: 'i-lucide-trash-2', color: 'error' as const, onSelect: () => handleDelete(course) }
-]
 
 const viewMode = ref<'table' | 'cards'>('cards')
 
@@ -575,7 +323,7 @@ function clearFilters() {
 }
 
 const filteredData = computed(() => {
-    let result = data.value
+    let result = data.value ?? []
 
     // Apply category/type/status filters
     result = result.filter(course =>
@@ -647,58 +395,67 @@ const activeFilterCount = computed(() => {
     </Teleport>
 
     <UTable v-if="viewMode === 'table'" sticky :data="pagedData" :columns="columns" ref="table"
-        v-model:column-visibility="columnVisibility" class="flex-1" />
+        v-model:column-visibility="columnVisibility" class="flex-1">
+        <template #empty>
+            <UEmpty variant="naked" icon="i-lucide-box" title="No offerings found" description="Get started by creating your first offering." />
+        </template>
+    </UTable>
 
     <div v-if="viewMode === 'table' && filteredData.length > pageSize"
         class="flex justify-center py-4 border-t border-default">
         <UPagination v-model:page="page" :total="filteredData.length" :items-per-page="pageSize" variant="subtle" />
     </div>
     <template v-else-if="viewMode === 'cards'">
-        <div class="flex-1 flex flex-col overflow-y-auto scrollbar">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 p-4 sm:p-6">
-                <UCard v-for="course in pagedData" :key="course.id" variant="subtle"
-                    :ui="{ root: 'flex flex-col justify-start', header: 'p-0 sm:p-0', body: 'flex-1' }"
-                    class="shadow-sm overflow-hidden">
-                    <!-- Cover image -->
-                    <template v-if="course.image" #header>
-                        <div class="relative h-36 overflow-hidden">
-                            <NuxtImg :src="course.image" :alt="course.title" class="w-full h-full object-cover" />
-                        </div>
-                    </template>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <UBadge variant="subtle" :color="statusColors[course.status]" size="sm" class="capitalize">
-                                {{ course.status }}
-                            </UBadge>
-                            <div class="font-semibold text-highlighted text-sm w-full truncate">
-                                {{ course.title }}
+        <div class="flex-1 flex flex-col overflow-y-auto scrollbar" :class="[data.length === 0 ? 'justify-center' : '']">
+            <template v-if="data.length === 0">
+                <UEmpty variant="naked" icon="i-lucide-box" title="No offerings found" description="Get started by creating your first offering." />
+            </template>
+            <template v-else>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 p-4 sm:p-6">
+                    <UCard v-for="course in pagedData" :key="course.id" variant="subtle"
+                        :ui="{ root: 'flex flex-col justify-start', header: 'p-0 sm:p-0', body: 'flex-1' }"
+                        class="shadow-sm overflow-hidden">
+                        <!-- Cover image -->
+                        <template v-if="course.image" #header>
+                            <div class="relative h-36 overflow-hidden">
+                                <NuxtImg :src="course.image" :alt="course.title" class="w-full h-full object-cover" />
                             </div>
-                            <AppDropdownMenu :items="getDropdownItems(course)" size="sm"
-                                trigger-icon="i-lucide-more-vertical" trigger-variant="ghost" trigger-color="neutral"
-                                trigger-size="sm" :content="{ align: 'end', side: 'bottom', sideOffset: 4 }" />
-                        </div>
-                        <div class="mt-2 text-muted text-xs">
-                            {{ course.description }}
-                        </div>
-                    </div>
-                    <template #footer>
-                        <div class="flex justify-between items-center">
-                            <div class="flex items-center gap-2 truncate">
-                                <UBadge variant="subtle" :color="typeColors[course.type]" size="sm"
-                                    class="capitalize shrink-0">
-                                    {{ course.type }}
+                        </template>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <UBadge variant="subtle" :color="statusColors[course.status]" size="sm" class="capitalize">
+                                    {{ course.status }}
                                 </UBadge>
-                                <div class="text-muted text-xs truncate">
-                                    {{ categoryLabels[course.category] }}
+                                <div class="font-semibold text-highlighted text-sm w-full truncate">
+                                    {{ course.title }}
+                                </div>
+                                <AppDropdownMenu :items="getDropdownItems(course)" size="sm"
+                                    trigger-icon="i-lucide-more-vertical" trigger-variant="ghost" trigger-color="neutral"
+                                    trigger-size="sm" :content="{ align: 'end', side: 'bottom', sideOffset: 4 }" />
+                            </div>
+                            <div class="mt-2 text-muted text-xs">
+                                {{ course.description }}
+                            </div>
+                        </div>
+                        <template #footer>
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center gap-2 truncate">
+                                    <UBadge variant="subtle" :color="typeColors[course.type]" size="sm"
+                                        class="capitalize shrink-0">
+                                        {{ course.type }}
+                                    </UBadge>
+                                    <div class="text-muted text-xs truncate">
+                                        {{ categoryLabels[course.category] }}
+                                    </div>
+                                </div>
+                                <div class="text-sm text-highlighted font-semibold">
+                                    ${{ course.price }}
                                 </div>
                             </div>
-                            <div class="text-sm text-highlighted font-semibold">
-                                ${{ course.price }}
-                            </div>
-                        </div>
-                    </template>
-                </UCard>
-            </div>
+                        </template>
+                    </UCard>
+                </div>
+            </template>
         </div>
         <div v-if="filteredData.length > pageSize" class="mt-auto flex justify-center py-4 border-t border-default">
             <UPagination v-model:page="page" :total="filteredData.length" :items-per-page="pageSize" variant="subtle" />
