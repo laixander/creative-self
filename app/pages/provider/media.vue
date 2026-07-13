@@ -93,11 +93,14 @@ function handleEdit(post: MediaPost) {
         type: post.type,
         description: post.description,
         url: post.url ?? '',
+        thumbnail: post.thumbnail ?? '',
         duration: post.duration ?? '',
         readTime: post.readTime ?? '',
         status: post.status,
         tags: post.tags.join(', ')
     })
+    imagePreview.value = post.thumbnail ?? null
+    uploadedFile.value = null
     open.value = true
 }
 
@@ -126,9 +129,11 @@ const columns: TableColumn<MediaPost>[] = [
         accessorKey: 'title',
         header: 'Title',
         cell: ({ row }) => h('div', { class: 'flex items-center gap-3' }, [
-            h('div', { class: `size-9 rounded-lg flex items-center justify-center shrink-0 bg-${typeColors[row.original.type]}-500/10` },
-                h(UIcon, { name: typeIcons[row.original.type], class: `text-${typeColors[row.original.type]}-500 text-base` })
-            ),
+            row.original.thumbnail
+                ? h('img', { src: row.original.thumbnail, class: 'w-12 h-8 rounded object-cover shrink-0' })
+                : h('div', { class: `size-9 rounded-lg flex items-center justify-center shrink-0 bg-${typeColors[row.original.type]}-500/10` },
+                    h(UIcon, { name: typeIcons[row.original.type], class: `text-${typeColors[row.original.type]}-500 text-base` })
+                ),
             h('div', { class: 'min-w-0' }, [
                 h('div', { class: 'font-semibold text-highlighted truncate max-w-72' }, row.original.title),
                 h('div', { class: 'text-xs text-muted truncate' }, row.original.tags.map(t => `#${t}`).join(' '))
@@ -254,6 +259,17 @@ const activeFilterCount = computed(() => {
 })
 
 // ============================================================================
+// Slideover / Detail
+// ============================================================================
+const isSlideoverOpen = ref(false)
+const selectedPost = ref<MediaPost | null>(null)
+
+function openSlideover(post: MediaPost) {
+    selectedPost.value = post
+    isSlideoverOpen.value = true
+}
+
+// ============================================================================
 // Modal / Form
 // ============================================================================
 const open = ref(false)
@@ -264,6 +280,7 @@ const schema = z.object({
     type: z.enum(['video', 'podcast', 'article']),
     description: z.string().min(1, 'Description is required'),
     url: z.string().url('Must be a valid URL').or(z.literal('')).optional(),
+    thumbnail: z.string().url('Must be a valid URL').or(z.literal('')).optional(),
     duration: z.string().optional(),
     readTime: z.string().optional(),
     status: z.enum(['draft', 'published', 'archived']),
@@ -277,11 +294,37 @@ const defaultState = (): Schema => ({
     type: 'article',
     description: '',
     url: '',
+    thumbnail: '',
     duration: '',
     readTime: '',
     status: 'draft',
     tags: ''
 })
+
+const imagePreview = ref<string | null>(null)
+const uploadedFile = ref<File | null>(null)
+
+function handleImageUpload(file: File | null | undefined) {
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) {
+        toast.add({ title: 'File too large', description: 'Please upload an image under 5 MB.', color: 'error' })
+        return
+    }
+    uploadedFile.value = file
+    const reader = new FileReader()
+    reader.onload = (e) => {
+        const result = e.target?.result as string
+        state.thumbnail = result
+        imagePreview.value = result
+    }
+    reader.readAsDataURL(file)
+}
+
+function removeImage() {
+    state.thumbnail = ''
+    imagePreview.value = null
+    uploadedFile.value = null
+}
 
 const state = reactive<Schema>(defaultState())
 const formRef = useTemplateRef('formRef')
@@ -289,6 +332,8 @@ const isSaving = ref(false)
 
 function resetForm() {
     Object.assign(state, defaultState())
+    imagePreview.value = null
+    uploadedFile.value = null
     isSaving.value = false
 }
 
@@ -316,6 +361,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                     type: event.data.type,
                     description: event.data.description,
                     url: event.data.url || undefined,
+                    thumbnail: event.data.thumbnail || undefined,
                     duration: event.data.duration || undefined,
                     readTime: event.data.readTime || undefined,
                     status: event.data.status,
@@ -330,6 +376,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
                 type: event.data.type,
                 description: event.data.description,
                 url: event.data.url || undefined,
+                thumbnail: event.data.thumbnail || undefined,
                 duration: event.data.duration || undefined,
                 readTime: event.data.readTime || undefined,
                 status: event.data.status,
@@ -385,10 +432,11 @@ definePageMeta({
     </Teleport>
 
 
-        <!-- Table View -->
-        <UTable v-if="viewMode === 'table'" sticky :data="pagedMedia" :columns="columns" ref="table" class="flex-1">
+    <!-- Table View -->
+    <UTable v-if="viewMode === 'table'" sticky :data="pagedMedia" :columns="columns" ref="table" class="flex-1">
         <template #empty>
-            <UEmpty variant="naked" icon="i-lucide-clapperboard" title="No media posts found" description="Create your first video, podcast, or article to get started." />
+            <UEmpty variant="naked" icon="i-lucide-clapperboard" title="No media posts found"
+                description="Create your first video, podcast, or article to get started." />
         </template>
     </UTable>
 
@@ -399,92 +447,50 @@ definePageMeta({
 
     <!-- Cards View -->
     <template v-else-if="viewMode === 'cards'">
-        <div class="flex-1 flex flex-col overflow-y-auto scrollbar" :class="[media.length === 0 ? 'justify-center' : '']">
+        <div class="flex-1 flex flex-col overflow-y-auto scrollbar"
+            :class="[media.length === 0 ? 'justify-center' : '']">
             <template v-if="media.length === 0">
-                <UEmpty variant="naked" icon="i-lucide-clapperboard" title="No media posts found" description="Create your first video, podcast, or article to get started." />
+                <UEmpty variant="naked" icon="i-lucide-clapperboard" title="No media posts found"
+                    description="Create your first video, podcast, or article to get started." />
             </template>
             <template v-else>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 p-4 sm:p-6">
-                <UCard v-for="post in pagedMedia" :key="post.id" variant="subtle"
-                    :ui="{ root: 'flex flex-col', body: 'flex-1 flex flex-col gap-3' }" class="shadow-sm">
-
-                    <!-- Header: type icon + title + actions -->
-                    <template #header>
-                        <div class="flex items-center justify-between gap-3">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div
-                                    :class="`size-10 rounded-lg bg-${typeColors[post.type]}-500/10 flex items-center justify-center shrink-0`">
-                                    <UIcon :name="typeIcons[post.type]"
-                                        :class="`text-${typeColors[post.type]}-500 text-lg`" />
-                                </div>
-                                <div class="min-w-0">
-                                    <div class="font-semibold text-highlighted text-sm leading-snug line-clamp-2">
-                                        {{ post.title }}
-                                    </div>
-                                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 p-4 sm:p-6">
+                    <UCard v-for="post in pagedMedia" :key="post.id" variant="subtle"
+                        :ui="{ root: 'flex flex-col justify-start', header: 'p-0 sm:p-0', body: 'flex-1' }"
+                        class="shadow-sm cursor-pointer hover:border-primary-500/50 transition-colors overflow-hidden"
+                        @click="openSlideover(post)">
+                        <!-- Cover image -->
+                        <template #header>
+                            <div v-if="post.thumbnail" class="relative h-36 overflow-hidden">
+                                <img :src="post.thumbnail" :alt="post.title" class="w-full h-full object-cover" />
                             </div>
-                            <div class="flex items-center gap-1 shrink-0">
-                                <UBadge :color="statusColors[post.status]" variant="subtle" size="sm"
-                                    class="capitalize">
+                            <div v-else
+                                class="relative h-36 overflow-hidden bg-elevated flex items-center justify-center">
+                                <UIcon :name="typeIcons[post.type]"
+                                    :class="`text-${typeColors[post.type]}-500 text-4xl`" />
+                            </div>
+                        </template>
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <UBadge variant="subtle" :color="statusColors[post.status]" size="sm"
+                                    class="capitalize shrink-0">
                                     {{ post.status }}
                                 </UBadge>
-                                <AppDropdownMenu :items="getDropdownItems(post)" size="sm"
-                                    trigger-icon="i-lucide-more-vertical" trigger-variant="ghost"
-                                    trigger-color="neutral" trigger-size="sm"
-                                    :content="{ align: 'end', side: 'bottom', sideOffset: 4 }" />
+                                <div class="font-semibold text-highlighted text-sm w-full truncate">
+                                    {{ post.title }}
+                                </div>
+                                <div class="shrink-0" @click.stop>
+                                    <AppDropdownMenu :items="getDropdownItems(post)" size="sm"
+                                        trigger-icon="i-lucide-more-vertical" trigger-variant="ghost"
+                                        trigger-color="neutral" trigger-size="sm"
+                                        :content="{ align: 'end', side: 'bottom', sideOffset: 4 }" />
+                                </div>
+                            </div>
+                            <div class="mt-2 text-muted text-xs line-clamp-3">
+                                {{ post.description }}
                             </div>
                         </div>
-                    </template>
-
-                    <!-- Description -->
-                    <p class="text-xs text-muted line-clamp-3 leading-relaxed flex-1">
-                        {{ post.description }}
-                    </p>
-
-                    <!-- Meta info: duration / read time + date -->
-                    <div class="flex items-center justify-between text-xs text-muted">
-                        <div class="flex items-center gap-1.5">
-                            <template v-if="post.type !== 'article' && post.duration">
-                                <UIcon name="i-lucide-clock" class="size-3.5" />
-                                <span>{{ post.duration }}</span>
-                            </template>
-                            <template v-else-if="post.readTime">
-                                <UIcon name="i-lucide-book-open" class="size-3.5" />
-                                <span>{{ post.readTime }} read</span>
-                            </template>
-                        </div>
-                        <div class="flex items-center gap-1">
-                            <UIcon name="i-lucide-calendar" class="size-3.5" />
-                            <span>{{ post.publishedDate }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Engagement stats -->
-                    <div class="grid grid-cols-3 gap-2">
-                        <div class="flex flex-col items-center gap-0.5 rounded-lg bg-elevated px-2 py-2">
-                            <span class="text-base font-bold text-highlighted">{{ post.views.toLocaleString() }}</span>
-                            <span class="text-[10px] text-muted uppercase tracking-wider font-medium">Views</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-0.5 rounded-lg bg-elevated px-2 py-2">
-                            <span class="text-base font-bold text-highlighted">{{ post.likes.toLocaleString() }}</span>
-                            <span class="text-[10px] text-muted uppercase tracking-wider font-medium">Likes</span>
-                        </div>
-                        <div class="flex flex-col items-center gap-0.5 rounded-lg bg-elevated px-2 py-2">
-                            <span class="text-base font-bold text-highlighted">{{ post.comments.toLocaleString()
-                            }}</span>
-                            <span class="text-[10px] text-muted uppercase tracking-wider font-medium">Comments</span>
-                        </div>
-                    </div>
-
-                    <!-- Tags footer -->
-                    <template #footer>
-                        <div class="flex items-center gap-1.5 flex-wrap">
-                            <UBadge v-for="tag in post.tags.slice(0, 3)" :key="tag" color="neutral" variant="subtle" size="sm">
-                                #{{ tag }}
-                            </UBadge>
-                        </div>
-                    </template>
-                </UCard>
+                    </UCard>
                 </div>
             </template>
         </div>
@@ -494,6 +500,86 @@ definePageMeta({
                 variant="subtle" />
         </div>
     </template>
+
+    <!-- Slideover -->
+    <USlideover v-model:open="isSlideoverOpen" title="Media Details">
+        <template #body>
+            <div v-if="selectedPost" class="space-y-6">
+                <div v-if="selectedPost.thumbnail"
+                    class="aspect-video w-full rounded-lg overflow-hidden bg-elevated border border-default">
+                    <img :src="selectedPost.thumbnail" class="w-full h-full object-cover" />
+                </div>
+
+                <div>
+                    <h1 class="text-2xl font-bold text-highlighted mb-2">{{ selectedPost.title }}</h1>
+                    <div class="flex items-center gap-2 mb-4">
+                        <UBadge :color="typeColors[selectedPost.type]" variant="subtle" class="capitalize">
+                            {{ typeLabels[selectedPost.type] }}
+                        </UBadge>
+                        <UBadge :color="statusColors[selectedPost.status]" variant="subtle" class="capitalize">
+                            {{ selectedPost.status }}
+                        </UBadge>
+                        <span class="text-sm text-muted flex items-center gap-1 ml-2">
+                            <UIcon name="i-lucide-calendar" class="size-4" />
+                            {{ selectedPost.publishedDate }}
+                        </span>
+                    </div>
+                    <p class="text-muted leading-relaxed">
+                        {{ selectedPost.description }}
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div
+                        class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                        <UIcon name="i-lucide-eye" class="size-5 text-muted mb-1" />
+                        <span class="text-lg font-bold text-highlighted">{{ selectedPost.views.toLocaleString()
+                            }}</span>
+                        <span class="text-xs text-muted uppercase tracking-wider">Views</span>
+                    </div>
+                    <div
+                        class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                        <UIcon name="i-lucide-heart" class="size-5 text-muted mb-1" />
+                        <span class="text-lg font-bold text-highlighted">{{ selectedPost.likes.toLocaleString()
+                            }}</span>
+                        <span class="text-xs text-muted uppercase tracking-wider">Likes</span>
+                    </div>
+                    <div
+                        class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                        <UIcon name="i-lucide-message-square" class="size-5 text-muted mb-1" />
+                        <span class="text-lg font-bold text-highlighted">{{ selectedPost.comments.toLocaleString()
+                            }}</span>
+                        <span class="text-xs text-muted uppercase tracking-wider">Comments</span>
+                    </div>
+                </div>
+
+                <div v-if="selectedPost.url" class="space-y-2">
+                    <div class="text-sm font-semibold text-highlighted">URL</div>
+                    <a :href="selectedPost.url" target="_blank"
+                        class="text-primary-500 hover:underline text-sm break-all flex items-center gap-1">
+                        <UIcon name="i-lucide-external-link" class="size-4 shrink-0" />
+                        {{ selectedPost.url }}
+                    </a>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="text-sm font-semibold text-highlighted">Tags</div>
+                    <div class="flex flex-wrap gap-2">
+                        <UBadge v-for="tag in selectedPost.tags" :key="tag" color="neutral" variant="subtle">
+                            #{{ tag }}
+                        </UBadge>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template #footer>
+            <div class="flex justify-end gap-2 w-full">
+                <UButton color="neutral" variant="outline" label="Close" @click="isSlideoverOpen = false" />
+                <UButton color="primary" icon="i-lucide-pencil" label="Edit Media"
+                    @click="() => { isSlideoverOpen = false; handleEdit(selectedPost!) }" />
+            </div>
+        </template>
+    </USlideover>
 
     <!-- New / Edit Modal -->
     <UModal v-model:open="open" :title="editingId !== null ? 'Edit media' : 'New media'">
@@ -519,7 +605,28 @@ definePageMeta({
                 </UFormField>
 
                 <UFormField label="URL" name="url" hint="Optional">
-                    <UInput v-model="state.url" variant="subtle" class="w-full" placeholder="https://youtube.com/..." />
+                    <UInput v-model="state.url" variant="subtle" class="w-full"
+                        placeholder="https://youtube.com/..." />
+                </UFormField>
+
+                <UFormField label="Thumbnail" name="thumbnail">
+                    <UFileUpload accept="image/*" class="w-full" :model-value="uploadedFile"
+                        :ui="{ base: imagePreview ? 'hidden' : 'min-h-28' }" @update:model-value="handleImageUpload">
+                        <template #default="{ open }">
+                            <div v-if="imagePreview" class="relative rounded-lg overflow-hidden border border-default h-40 w-full">
+                                <img :src="imagePreview" alt="Thumbnail" class="w-full h-full object-cover" />
+                                <UButton square icon="i-lucide-x" variant="soft" size="sm" color="neutral"
+                                    class="absolute top-2 right-2 bg-black/60 hover:bg-black/80 text-white rounded-full transition-colors"
+                                    @click.stop="removeImage" />
+                            </div>
+                            <div v-else class="flex flex-col items-center justify-center gap-2 w-full h-28 rounded-lg border border-dashed border-default cursor-pointer hover:bg-elevated/50 transition-colors"
+                                @click="open()">
+                                <UIcon name="i-lucide-image-plus" class="w-7 h-7 text-muted" />
+                                <span class="text-xs text-muted">Click to upload a thumbnail</span>
+                                <span class="text-xs text-dimmed">PNG, JPG, WEBP up to 5 MB</span>
+                            </div>
+                        </template>
+                    </UFileUpload>
                 </UFormField>
 
                 <div class="grid grid-cols-2 gap-3">

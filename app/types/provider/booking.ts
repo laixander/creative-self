@@ -3,6 +3,10 @@ export interface Booking {
   company: string
   offering: string
   date: string
+  time?: string
+  location?: string
+  contactName?: string
+  price?: number
   participants: number
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled'
+  status: 'submitted' | 'pending_confirmation' | 'confirmed' | 'completed' | 'cancelled' | 'rejected'
 }

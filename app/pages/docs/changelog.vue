@@ -32,91 +32,52 @@ interface ChangelogEntry {
 
 const changelogs: ChangelogEntry[] = [
     {
-        date: 'June 5, 2026',
-        version: 'v1.0.5',
-        title: 'Audit Logging & UI Standardization',
-        description: 'Comprehensive logging architecture with namespace drawers, unified confirmation flows, and new grid views.',
-        changes: [
-            { type: 'feature', text: 'Implemented global useAppLogger for robust system and user activity tracking.' },
-            { type: 'feature', text: 'Added Recent Activity LogsDrawer to Projects, Users, Analytics, and Settings modules.' },
-            { type: 'feature', text: 'Built interactive Card Grid view toggle for the Workspace directory.' },
-            { type: 'refactor', text: 'Standardized all CRUD and destructive actions to use the global ConfirmationModal.' },
-            { type: 'refactor', text: 'Unified StatusBadge styling and component usage across all module tables.' },
-            { type: 'fix', text: 'Resolved Faker.js deprecation warnings and TypeScript mismatched types for generated phone numbers.' }
-        ]
-    },
-    {
-        date: 'June 3, 2026',
-        version: 'v1.0.4',
-        title: 'Premium UI & User Experience Refinements',
-        description: 'Enhanced component styling across multiple modules, improved search capabilities, and refined developer tools.',
-        changes: [
-            { type: 'feature', text: 'Implemented global search filtering for Card views in both User and Project management pages.' },
-            { type: 'feature', text: 'Added premium dynamic styling to the Analytics controls with ambient glow effects and custom dark mode themes.' },
-            { type: 'fix', text: 'Prevented the DevTool Settings modal from automatically appearing on every page refresh.' },
-            { type: 'fix', text: 'Hidden Demo FAB by default for cleaner production-like presentation.' },
-            { type: 'refactor', text: 'Applied centralized dark-mode ready chart configurations to the Revenue Trend report.' },
-            { type: 'chore', text: 'Added subtle grid background patterns with radial masking to Presentation slides.' }
-        ]
-    },
-    {
-        date: 'June 2, 2026',
+        date: 'July 13, 2026',
         version: 'v1.0.3',
-        title: 'Settings & DevTools',
-        description: 'Introduced general system settings, workspace management, and developer tools.',
+        title: 'Kanban Bookings & Core Enhancements',
+        description: 'Implemented Kanban board for bookings, photo support for media, and various user experience improvements.',
         changes: [
-            { type: 'feature', text: 'Added General Settings page for configuring organization properties and policies.' },
-            { type: 'feature', text: 'Implemented Workspace Management with dynamic procedural mock data generation.' },
-            { type: 'feature', text: 'Built DevTool component and useDevSettings for streamlined debugging and state management.' },
-            { type: 'chore', text: 'Added backend handover guidelines for future API integration.' }
+            { type: 'feature', text: 'Implemented Kanban Board for managing Provider bookings.' },
+            { type: 'feature', text: 'Added photo support to the Provider Media page.' },
+            { type: 'feature', text: 'Added local storage persistence for the Provider data store to prevent data loss on refresh.' },
+            { type: 'refactor', text: 'Simplified the login flow by removing manual role selection and auto-redirecting to the dashboard.' },
+            { type: 'fix', text: 'Automatically toggle and close the Teams dropdown menu upon selection.' }
         ]
     },
     {
-        date: 'June 1, 2026',
+        date: 'July 11, 2026',
         version: 'v1.0.2',
-        title: 'Administrator Module & Authentication',
-        description: 'Added robust authentication gating, user management, detailed reports, and expanded billing features.',
+        title: 'Dashboard & Notification APIs',
+        description: 'Introduced new API routes and data stores for Kanban, Notifications, and Dashboard analytics.',
         changes: [
-            { type: 'feature', text: 'Built AuthGate component and integrated useDemoAuth for route protection.' },
-            { type: 'feature', text: 'Created Users management page for role-based access control.' },
-            { type: 'feature', text: 'Added Invoices page under the Billing module.' },
-            { type: 'feature', text: 'Built comprehensive Reports page in the Administrator module.' },
-            { type: 'refactor', text: 'Enhanced UserMenu and UserModal components for improved user profile handling.' },
-            { type: 'refactor', text: 'Reorganized core pages for better modularity.' }
+            { type: 'feature', text: 'Added backend API and Pinia store for Kanban board operations.' },
+            { type: 'feature', text: 'Implemented robust notification system with templates and API endpoints.' },
+            { type: 'feature', text: 'Built comprehensive Dashboard API endpoints to serve analytics data.' },
+            { type: 'refactor', text: 'Restructured user and role stores to align with the new authentication flow.' }
         ]
     },
     {
-        date: 'May 25, 2026',
+        date: 'July 9, 2026',
         version: 'v1.0.1',
-        title: 'Full System Completion',
-        description: 'Completed all operational modules for the platform, including a powerful automated data seeder to demonstrate system capabilities under load.',
+        title: 'Provider Module Expansion',
+        description: 'Massive expansion of the Provider module including new management pages and data pagination.',
         changes: [
-            { type: 'feature', text: 'Built Project Management Module: Task directory, unified Workspaces list, and an interactive Project Details page.' },
-            { type: 'feature', text: 'Built Billing Module: Subscription management, Charge/Payment modals, and dynamic header actions.' },
-            { type: 'feature', text: 'Built Analytics Module: Visual Data Grid, smart Metric Cards, and export queue.' },
-            { type: 'feature', text: 'Built Automation Engine: Fully automated background event generator for tasks, notifications, and billing.' },
-            { type: 'feature', text: 'Added real-time Activity Logs feed.' },
-            { type: 'refactor', text: 'Implemented Vue Teleport for dynamic header actions across module detail pages.' }
+            { type: 'feature', text: 'Added Provider pages: Clients, Media, Profile, Requests, and Schedule.' },
+            { type: 'feature', text: 'Created usePagination composable for seamless data table navigation.' },
+            { type: 'feature', text: 'Implemented Availed Bookings view for tracking completed services.' }
         ]
     },
     {
-        date: 'May 24, 2026',
+        date: 'July 7, 2026',
         version: 'v1.0.0',
-        title: 'Core Modules & Dashboard',
-        description: 'Full implementation of the operations dashboard, management modules, data stores, and reusable component library.',
+        title: 'Project Initialization & Base Architecture',
+        description: 'Initial project setup with Nuxt, Prisma ORM, and foundational user management pages.',
         changes: [
-            { type: 'feature', text: 'Built Dashboard page with KPI stat cards (Active Users, MRR, New Signups, Server Load).' },
-            { type: 'feature', text: 'Integrated Chart.js via vue-chartjs — added Doughnut and Bar charts with theme-aware palettes.' },
-            { type: 'feature', text: 'Added Recent Activity and Summary quick-info panels to the dashboard.' },
-            { type: 'feature', text: 'Implemented Data Management page with full CRUD — sortable data table, inline status badges, and quick actions.' },
-            { type: 'feature', text: 'Created ItemModal and ConfirmationModal overlay components for add / edit / delete workflows.' },
-            { type: 'feature', text: 'Built 5 Pinia stores (Users, Projects, Tasks, Invoices, Settings) with computed getters and demo seeder.' },
-            { type: 'feature', text: 'Added useChart composable with shared palette, dataset factories, and dark-mode-responsive chart options.' },
-            { type: 'feature', text: 'Created useAppToast, useAppLogger, useEvents, and useDemoSeeder composables.' },
-            { type: 'feature', text: 'Built reusable StatCard, Empty, TableGlobalFilter, TableColumnToggle, and LogsDrawer components.' },
-            { type: 'feature', text: 'Implemented collapsible sidebar layout with dynamic page titles and header action buttons from route meta.' },
-            { type: 'feature', text: 'Added UserMenu component with role display and avatar.' },
-            { type: 'refactor', text: 'Standardized table pages with sticky headers, global search, and column visibility toggles.' }
+            { type: 'feature', text: 'Initialized project with Nuxt and established core UI layout.' },
+            { type: 'feature', text: 'Integrated Prisma ORM with initial schema for users, roles, and provider data.' },
+            { type: 'feature', text: 'Built Users and Roles management pages with global filtering and column toggling.' },
+            { type: 'feature', text: 'Added initial Provider Offerings page.' },
+            { type: 'feature', text: 'Implemented global ConfirmationModal and UserMenu components.' }
         ]
     }
 ]

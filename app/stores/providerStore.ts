@@ -62,5 +62,8 @@ export const useProviderStore = defineStore('providerStore', {
             this.availedBookings = []
             this.isDataDeployed = false
         }
-    }
+    },
+    persist: {
+        storage: persistedState.localStorage,
+    },
 })

@@ -244,6 +244,17 @@ const activeFilterCount = computed(() => {
 })
 
 // ============================================================================
+// Slideover / Detail
+// ============================================================================
+const isSlideoverOpen = ref(false)
+const selectedClient = ref<Client | null>(null)
+
+function openSlideover(client: Client) {
+    selectedClient.value = client
+    isSlideoverOpen.value = true
+}
+
+// ============================================================================
 // Page meta
 // ============================================================================
 definePageMeta({
@@ -278,36 +289,43 @@ definePageMeta({
     </Teleport>
 
 
-        <template v-if="viewMode === 'table'">
-            <!-- Table View -->
-            <UTable sticky :data="pagedClients" :columns="columns" ref="table" class="flex-1">
-                <template #empty>
-                    <UEmpty variant="naked" icon="i-lucide-building-2" title="No clients found" description="When you start serving companies, they will appear here." />
-                </template>
-            </UTable>
+    <template v-if="viewMode === 'table'">
+        <!-- Table View -->
+        <UTable sticky :data="pagedClients" :columns="columns" ref="table" class="flex-1">
+            <template #empty>
+                <UEmpty variant="naked" icon="i-lucide-building-2" title="No clients found"
+                    description="When you start serving companies, they will appear here." />
+            </template>
+        </UTable>
 
-            <div v-if="filteredClients.length > pageSize" class="flex justify-center py-4 border-t border-default">
-                <UPagination v-model:page="page" :total="filteredClients.length" :items-per-page="pageSize" variant="subtle" />
-            </div>
-        </template>
+        <div v-if="filteredClients.length > pageSize" class="flex justify-center py-4 border-t border-default">
+            <UPagination v-model:page="page" :total="filteredClients.length" :items-per-page="pageSize"
+                variant="subtle" />
+        </div>
+    </template>
 
-        <!-- Cards View -->
-        <template v-else-if="viewMode === 'cards'">
-            <div class="flex-1 flex flex-col overflow-y-auto scrollbar" :class="[clients.length === 0 ? 'justify-center' : '']">
-                <template v-if="clients.length === 0">
-                    <UEmpty variant="naked" icon="i-lucide-building-2" title="No clients found" description="When you start serving companies, they will appear here." />
-                </template>
-                <template v-else>
+    <!-- Cards View -->
+    <template v-else-if="viewMode === 'cards'">
+        <div class="flex-1 flex flex-col overflow-y-auto scrollbar"
+            :class="[clients.length === 0 ? 'justify-center' : '']">
+            <template v-if="clients.length === 0">
+                <UEmpty variant="naked" icon="i-lucide-building-2" title="No clients found"
+                    description="When you start serving companies, they will appear here." />
+            </template>
+            <template v-else>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 p-4 sm:p-6">
                     <UCard v-for="client in pagedClients" :key="client.id" variant="subtle"
-                        :ui="{ root: 'flex flex-col', body: 'flex-1 flex flex-col gap-4 sm:gap-6' }" class="shadow-sm">
+                        :ui="{ root: 'flex flex-col', body: 'flex-1 flex flex-col gap-4 sm:gap-6' }"
+                        class="shadow-sm cursor-pointer hover:border-primary-500/50 transition-colors"
+                        @click="openSlideover(client)">
 
                         <!-- Card Header -->
                         <template #header>
                             <div class="flex items-center justify-between gap-3">
                                 <div class="flex items-center gap-3 min-w-0">
-                                    <div class="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                                    <div
+                                        class="size-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                                         <UIcon :name="industryIcons[client.industry] ?? 'i-lucide-building-2'"
                                             class="text-primary text-base" />
                                     </div>
@@ -316,7 +334,7 @@ definePageMeta({
                                         <div class="text-xs text-muted">{{ client.industry }}</div>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-1 shrink-0">
+                                <div class="flex items-center gap-1 shrink-0" @click.stop>
                                     <UBadge :color="statusColors[client.status]" variant="subtle" size="sm"
                                         class="capitalize">
                                         {{ client.status }}
@@ -345,48 +363,116 @@ definePageMeta({
                             </div>
                         </div>
 
-                        <!-- Booking stats -->
-                        <div class="grid grid-cols-3 gap-2">
-                            <div class="flex flex-col items-center gap-0.5 rounded-lg bg-elevated px-2 py-2">
-                                <span class="text-base font-bold text-highlighted">{{ client.totalBookings }}</span>
-                                <span class="text-[10px] text-muted uppercase tracking-wider font-medium">Bookings</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-0.5 rounded-lg bg-elevated px-2 py-2">
-                                <span class="text-base font-bold text-highlighted">{{ client.totalParticipants }}</span>
-                                <span class="text-[10px] text-muted uppercase tracking-wider font-medium">Attendees</span>
-                            </div>
-                            <div class="flex flex-col items-center gap-0.5 rounded-lg bg-elevated px-2 py-2">
-                                <span class="text-base font-bold text-success">{{ formatter.format(client.totalSpend)
-                                }}</span>
-                                <span class="text-[10px] text-muted uppercase tracking-wider font-medium">Spend</span>
-                            </div>
-                        </div>
-
-                        <!-- Footer -->
-                        <template #footer>
-                            <div class="flex items-center justify-between text-xs text-muted">
-                                <div class="flex items-center gap-1.5">
-                                    <UIcon name="i-lucide-check-circle" class="text-success size-3.5" />
-                                    <span>{{ client.completedBookings }} completed</span>
-                                    <template v-if="client.cancelledBookings > 0">
-                                        <span class="text-default/30">·</span>
-                                        <UIcon name="i-lucide-x-circle" class="text-error size-3.5" />
-                                        <span class="text-error">{{ client.cancelledBookings }} cancelled</span>
-                                    </template>
-                                </div>
-                                <div class="flex items-center gap-1">
-                                    <UIcon name="i-lucide-calendar" class="size-3.5" />
-                                    <span>{{ client.lastBookingDate }}</span>
-                                </div>
-                            </div>
-                        </template>
                     </UCard>
                 </div>
-                </template>
-            </div>
-            
-            <div v-if="filteredClients.length > pageSize" class="mt-auto flex justify-center py-4 border-t border-default">
-                <UPagination v-model:page="page" :total="filteredClients.length" :items-per-page="pageSize" variant="subtle" />
+            </template>
+        </div>
+
+        <div v-if="filteredClients.length > pageSize" class="mt-auto flex justify-center py-4 border-t border-default">
+            <UPagination v-model:page="page" :total="filteredClients.length" :items-per-page="pageSize"
+                variant="subtle" />
+        </div>
+    </template>
+
+    <!-- Slideover -->
+    <USlideover v-model:open="isSlideoverOpen" title="Client Details">
+        <template #body>
+            <div v-if="selectedClient" class="space-y-6">
+                <div class="flex items-center gap-4 border-b border-default pb-4">
+                    <div class="size-16 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                        <UIcon :name="industryIcons[selectedClient.industry] ?? 'i-lucide-building-2'"
+                            class="text-primary text-3xl" />
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-highlighted">{{ selectedClient.company }}</h2>
+                        <div class="flex items-center gap-2 mt-1">
+                            <UBadge :color="statusColors[selectedClient.status]" variant="subtle" size="sm"
+                                class="capitalize">
+                                {{ selectedClient.status }}
+                            </UBadge>
+                            <span class="text-sm text-muted">{{ selectedClient.industry }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="p-3 bg-elevated rounded-lg border border-default">
+                        <div class="text-xs text-muted uppercase tracking-wider mb-1">Contact Name</div>
+                        <div class="font-semibold text-highlighted flex items-center gap-2">
+                            <UIcon name="i-lucide-user" class="text-muted size-4" />
+                            {{ selectedClient.contactName }}
+                        </div>
+                    </div>
+                    <div class="p-3 bg-elevated rounded-lg border border-default">
+                        <div class="text-xs text-muted uppercase tracking-wider mb-1">Contact Email</div>
+                        <div class="font-semibold text-highlighted flex items-center gap-2">
+                            <UIcon name="i-lucide-mail" class="text-muted size-4" />
+                            <a :href="`mailto:${selectedClient.contactEmail}`"
+                                class="text-primary hover:underline truncate">{{ selectedClient.contactEmail }}</a>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-elevated rounded-lg border border-default col-span-2">
+                        <div class="text-xs text-muted uppercase tracking-wider mb-1">Location</div>
+                        <div class="font-semibold text-highlighted flex items-center gap-2">
+                            <UIcon name="i-lucide-map-pin" class="text-muted size-4" />
+                            {{ selectedClient.location }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <h3 class="text-sm font-semibold text-highlighted uppercase tracking-wider">Booking Statistics</h3>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div
+                            class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                            <span class="text-lg font-bold text-highlighted">{{ selectedClient.totalBookings }}</span>
+                            <span class="text-xs text-muted uppercase tracking-wider">Bookings</span>
+                        </div>
+                        <div
+                            class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                            <span class="text-lg font-bold text-highlighted">{{ selectedClient.totalParticipants
+                                }}</span>
+                            <span class="text-xs text-muted uppercase tracking-wider">Attendees</span>
+                        </div>
+                        <div
+                            class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                            <span class="text-lg font-bold text-success">{{ formatter.format(selectedClient.totalSpend)
+                                }}</span>
+                            <span class="text-xs text-muted uppercase tracking-wider">Spend</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-2">
+                    <h3 class="text-sm font-semibold text-highlighted uppercase tracking-wider">Activity</h3>
+                    <div
+                        class="text-sm text-muted divide-y divide-default *:flex *:justify-between *:items-center *:py-2 *:first:pt-0 *:last:pb-0">
+                        <div>
+                            <span class="flex items-center gap-2">
+                                <UIcon name="i-lucide-check-circle" class="text-success size-4" /> Completed Bookings
+                            </span>
+                            <span class="font-medium text-highlighted">{{ selectedClient.completedBookings }}</span>
+                        </div>
+                        <div>
+                            <span class="flex items-center gap-2">
+                                <UIcon name="i-lucide-x-circle" class="text-error size-4" /> Cancelled Bookings
+                            </span>
+                            <span class="font-medium text-highlighted">{{ selectedClient.cancelledBookings }}</span>
+                        </div>
+                        <div>
+                            <span class="flex items-center gap-2">
+                                <UIcon name="i-lucide-calendar" class="size-4" /> Last Booking Date
+                            </span>
+                            <span class="font-medium text-highlighted">{{ selectedClient.lastBookingDate }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </template>
+        <template #footer>
+            <div class="flex justify-end gap-2 w-full">
+                <UButton color="neutral" variant="outline" label="Close" @click="isSlideoverOpen = false" />
+            </div>
+        </template>
+    </USlideover>
 </template>

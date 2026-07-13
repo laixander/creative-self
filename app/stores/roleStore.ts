@@ -4,8 +4,10 @@ import type { Role } from '~/types/role'
 export const useRoleStore = defineStore('roleStore', {
     state: () => ({
         roles: [
-            { id: 'role-admin', name: 'Admin', description: 'Administrator with full access', pages: ['/demo', '/demo/crud', '/demo/roles', '/demo/activity-logs', '/demo/kanban', '/settings', '/demo/notifications', '/demo/wizard', '/demo/cards', '/provider', '/provider/offerings', '/provider/requests', '/provider/schedule', '/provider/availed', '/provider/clients', '/provider/media', '/provider/profile'] },
-            { id: 'role-staff', name: 'Staff', description: 'Regular staff member', pages: ['/demo', '/demo/crud', '/demo/kanban', '/demo/notifications'] },
+            { id: 'role-developer', name: 'Developer', description: 'Developer with all menus', pages: ['/provider', '/demo', '/demo/crud', '/demo/roles', '/demo/activity-logs', '/demo/kanban', '/settings', '/demo/notifications', '/demo/wizard', '/demo/cards', '/provider/offerings', '/provider/bookings', '/provider/schedule', '/provider/availed', '/provider/clients', '/provider/media', '/provider/profile', '/admin', '/hr'] },
+            { id: 'role-admin', name: 'Admin', description: 'Admin menu only', pages: ['/admin'] },
+            { id: 'role-hr', name: 'HR', description: 'HR menu only', pages: ['/hr'] },
+            { id: 'role-provider', name: 'Provider', description: 'Provider menu only', pages: ['/provider', '/provider/offerings', '/provider/bookings', '/provider/schedule', '/provider/availed', '/provider/clients', '/provider/media', '/provider/profile'] },
         ] as Role[],
         isLoading: false,
     }),

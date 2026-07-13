@@ -39,10 +39,14 @@ const allNavItems = computed<NavigationMenuItem[]>(() => [
             { label: 'Cards', to: '/demo/cards' }
         ]
     },
+    { type: 'label', label: 'Admin' },
+    { label: 'Dashboard', icon: 'i-lucide-shield', to: '/admin' },
+    { type: 'label', label: 'HR' },
+    { label: 'Dashboard', icon: 'i-lucide-users', to: '/hr' },
     { type: 'label', label: 'Provider' },
     { label: 'Dashboard', icon: 'i-lucide-chart-pie', to: '/provider' },
     { label: 'Offerings', icon: 'i-lucide-hand-heart', to: '/provider/offerings' },
-    { label: 'Booking Requests', icon: 'i-lucide-messages-square', to: '/provider/requests' },
+    { label: 'Booking Requests', icon: 'i-lucide-messages-square', to: '/provider/bookings' },
     { label: 'Schedule Monitoring', icon: 'i-lucide-calendar-days', to: '/provider/schedule' },
     { label: 'Availed Services', icon: 'i-lucide-circle-check-big', to: '/provider/availed' },
     { label: 'Company Clients', icon: 'i-lucide-briefcase', to: '/provider/clients' },
@@ -51,6 +55,18 @@ const allNavItems = computed<NavigationMenuItem[]>(() => [
 ])
 
 const { role } = useDemoAuth()
+const selectedTeam = useState<{ label: string, icon: string }>('selectedTeam', () => ({
+    label: 'Provider',
+    icon: 'i-lucide-briefcase'
+}))
+
+// Automatically set selectedTeam for non-developer roles
+watchEffect(() => {
+    if (role.value?.name === 'Admin') selectedTeam.value = { label: 'Admin', icon: 'i-lucide-shield' }
+    else if (role.value?.name === 'HR') selectedTeam.value = { label: 'HR', icon: 'i-lucide-users' }
+    else if (role.value?.name === 'Provider') selectedTeam.value = { label: 'Provider', icon: 'i-lucide-briefcase' }
+    // Developer can freely switch via TeamsMenu, defaults to whatever it was.
+})
 
 const isAuthorized = computed(() => {
     // If it's a public route or docs, always authorized
@@ -65,11 +81,6 @@ const items = computed<NavigationMenuItem[][]>(() => {
 
     const filterGroup = (group: NavigationMenuItem[]) => {
         return group.reduce<NavigationMenuItem[]>((acc, item) => {
-            if (item.type === 'label') {
-                acc.push(item)
-                return acc
-            }
-
             if (item.children && item.children.length > 0) {
                 const allowedChildren = item.children.filter(
                     (child) => child.to && pages.includes(child.to as string)
@@ -96,23 +107,31 @@ const items = computed<NavigationMenuItem[][]>(() => {
     let currentGroup: NavigationMenuItem[] = []
 
     allNavItems.value.forEach((item) => {
-        if (item.type === 'label' && currentGroup.length > 0) {
-            groups.push(currentGroup)
+        if (item.type === 'label') {
+            if (currentGroup.length > 0) {
+                groups.push(currentGroup)
+            }
             currentGroup = []
+                // Attach the label string to the array object itself so we can filter later
+                ; (currentGroup as any).teamLabel = item.label
+        } else {
+            currentGroup.push(item)
         }
-        currentGroup.push(item)
     })
     if (currentGroup.length > 0) groups.push(currentGroup)
 
-    // Filter each group and remove empty ones (only a label with no items)
+    // Filter each group based on the selected team, then map permissions and remove empty ones
     return groups
+        .filter((group) => {
+            return (group as any).teamLabel === selectedTeam.value.label
+        })
         .map(filterGroup)
-        .filter((group) => group.some((item) => item.type !== 'label'))
+        .filter((group) => group.length > 0)
 })
 const isCollapsed = computed(() => collapsible.value === 'icon' && !open.value)
 const pageTitle = computed(() => {
-  const activeItem = items.value.flat().find((item: any) => item.to === route.path)
-  return (activeItem?.label as string) || (route.meta.title as string)
+    const activeItem = items.value.flat().find((item: any) => item.to === route.path)
+    return (activeItem?.label as string) || (route.meta.title as string)
 })
 </script>
 
@@ -135,6 +154,8 @@ const pageTitle = computed(() => {
                     <UButton class="lg:hidden ml-auto" icon="i-lucide-x" color="neutral" variant="ghost"
                         aria-label="Close sidebar" @click="close()" />
                 </template>
+
+                <TeamsMenu :collapsed="isCollapsed" />
 
                 <UNavigationMenu :items="items" orientation="vertical" :collapsed="isCollapsed" :tooltip="{
                     delayDuration: 200,

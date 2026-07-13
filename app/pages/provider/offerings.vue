@@ -156,6 +156,17 @@ function handleDelete(course: CourseRow) {
 }
 
 // ============================================================================
+// Slideover / Detail
+// ============================================================================
+const isSlideoverOpen = ref(false)
+const selectedCourse = ref<CourseRow | null>(null)
+
+function openSlideover(course: CourseRow) {
+    selectedCourse.value = course
+    isSlideoverOpen.value = true
+}
+
+// ============================================================================
 // Modal / Form config
 // ============================================================================
 const open = ref(false)
@@ -414,7 +425,8 @@ const activeFilterCount = computed(() => {
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 p-4 sm:p-6">
                     <UCard v-for="course in pagedData" :key="course.id" variant="subtle"
                         :ui="{ root: 'flex flex-col justify-start', header: 'p-0 sm:p-0', body: 'flex-1' }"
-                        class="shadow-sm overflow-hidden">
+                        class="shadow-sm overflow-hidden cursor-pointer hover:border-primary-500/50 transition-colors"
+                        @click="openSlideover(course)">
                         <!-- Cover image -->
                         <template v-if="course.image" #header>
                             <div class="relative h-36 overflow-hidden">
@@ -429,30 +441,16 @@ const activeFilterCount = computed(() => {
                                 <div class="font-semibold text-highlighted text-sm w-full truncate">
                                     {{ course.title }}
                                 </div>
-                                <AppDropdownMenu :items="getDropdownItems(course)" size="sm"
-                                    trigger-icon="i-lucide-more-vertical" trigger-variant="ghost" trigger-color="neutral"
-                                    trigger-size="sm" :content="{ align: 'end', side: 'bottom', sideOffset: 4 }" />
+                                <div class="shrink-0" @click.stop>
+                                    <AppDropdownMenu :items="getDropdownItems(course)" size="sm"
+                                        trigger-icon="i-lucide-more-vertical" trigger-variant="ghost" trigger-color="neutral"
+                                        trigger-size="sm" :content="{ align: 'end', side: 'bottom', sideOffset: 4 }" />
+                                </div>
                             </div>
-                            <div class="mt-2 text-muted text-xs">
+                            <div class="mt-2 text-muted text-xs line-clamp-3">
                                 {{ course.description }}
                             </div>
                         </div>
-                        <template #footer>
-                            <div class="flex justify-between items-center">
-                                <div class="flex items-center gap-2 truncate">
-                                    <UBadge variant="subtle" :color="typeColors[course.type]" size="sm"
-                                        class="capitalize shrink-0">
-                                        {{ course.type }}
-                                    </UBadge>
-                                    <div class="text-muted text-xs truncate">
-                                        {{ categoryLabels[course.category] }}
-                                    </div>
-                                </div>
-                                <div class="text-sm text-highlighted font-semibold">
-                                    ${{ course.price }}
-                                </div>
-                            </div>
-                        </template>
                     </UCard>
                 </div>
             </template>
@@ -540,4 +538,60 @@ const activeFilterCount = computed(() => {
             </div>
         </template>
     </UModal>
+
+    <!-- Slideover -->
+    <USlideover v-model:open="isSlideoverOpen" title="Offering Details">
+        <template #body>
+            <div v-if="selectedCourse" class="space-y-6">
+                <div v-if="selectedCourse.image" class="aspect-video w-full rounded-lg overflow-hidden bg-elevated border border-default">
+                    <img :src="selectedCourse.image" class="w-full h-full object-cover" />
+                </div>
+                <div v-else class="aspect-video w-full rounded-lg bg-elevated border border-default flex items-center justify-center">
+                    <UIcon name="i-lucide-image" class="text-muted text-4xl" />
+                </div>
+
+                <div>
+                    <h1 class="text-2xl font-bold text-highlighted mb-2">{{ selectedCourse.title }}</h1>
+                    <div class="flex items-center gap-2 mb-4">
+                        <UBadge :color="typeColors[selectedCourse.type]" variant="subtle" class="capitalize">
+                            {{ selectedCourse.type }}
+                        </UBadge>
+                        <UBadge :color="statusColors[selectedCourse.status]" variant="subtle" class="capitalize">
+                            {{ selectedCourse.status }}
+                        </UBadge>
+                        <span class="text-sm text-muted ml-2">
+                            {{ categoryLabels[selectedCourse.category] }}
+                        </span>
+                    </div>
+                    <p class="text-muted leading-relaxed">
+                        {{ selectedCourse.description }}
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                        <UIcon name="i-lucide-circle-dollar-sign" class="size-5 text-success mb-1" />
+                        <span class="text-lg font-bold text-highlighted">${{ selectedCourse.price }}</span>
+                        <span class="text-xs text-muted uppercase tracking-wider">Price</span>
+                    </div>
+                    <div class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                        <UIcon name="i-lucide-clock" class="size-5 text-muted mb-1" />
+                        <span class="text-lg font-bold text-highlighted">{{ selectedCourse.duration }}</span>
+                        <span class="text-xs text-muted uppercase tracking-wider">Duration</span>
+                    </div>
+                    <div class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                        <UIcon name="i-lucide-users" class="size-5 text-muted mb-1" />
+                        <span class="text-lg font-bold text-highlighted">{{ selectedCourse.maxParticipants }}</span>
+                        <span class="text-xs text-muted uppercase tracking-wider">Capacity</span>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template #footer>
+            <div class="flex justify-end gap-2 w-full">
+                <UButton color="neutral" variant="outline" label="Close" @click="isSlideoverOpen = false" />
+                <UButton color="primary" icon="i-lucide-pencil" label="Edit Offering" @click="() => { isSlideoverOpen = false; handleEdit(selectedCourse!) }" />
+            </div>
+        </template>
+    </USlideover>
 </template>

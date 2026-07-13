@@ -5,13 +5,13 @@ const providerStore = useProviderStore()
 
 const stats = computed(() => [
     { label: 'Offerings', value: providerStore.offerings.length.toString(), icon: 'i-lucide-hand-heart', color: 'rose' },
-    { label: 'Pending Requests', value: providerStore.bookings.filter(b => b.status === 'pending').length.toString(), icon: 'i-lucide-messages-square', color: 'sky' },
+    { label: 'Pending Requests', value: providerStore.bookings.filter(b => b.status === 'pending_confirmation').length.toString(), icon: 'i-lucide-messages-square', color: 'sky' },
     { label: 'Confirmed', value: providerStore.scheduleEvents.filter(e => e.status === 'Confirmed').length.toString(), icon: 'i-lucide-calendar-days', color: 'lime' },
     { label: 'Companies Served', value: providerStore.clients.length.toString(), icon: 'i-lucide-circle-check-big', color: 'purple' }
 ])
 
 const upcomingBooking = computed(() => providerStore.bookings
-    .filter(b => b.status === 'confirmed' || b.status === 'pending')
+    .filter(b => b.status === 'confirmed' || b.status === 'pending_confirmation')
     .map(b => ({
         id: b.id,
         title: b.offering,

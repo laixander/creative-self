@@ -1,12 +1,13 @@
 <script setup lang="ts">
-const viewMode = defineModel<'table' | 'cards'>({ default: 'cards' })
+const viewMode = defineModel<'table' | 'cards' | 'kanban'>({ default: 'cards' })
+defineProps<{ kanban?: boolean }>()
 </script>
 
 <template>
   <UFieldGroup size="xl">
-    <UButton square color="neutral" :variant="viewMode === 'cards' ? 'subtle' : 'outline'"
-      @click="() => { viewMode = 'cards' }">
-      <UIcon name="i-lucide-grid-2x2" />
+    <UButton square color="neutral" :variant="viewMode === 'cards' || viewMode === 'kanban' ? 'subtle' : 'outline'"
+      @click="() => { viewMode = kanban ? 'kanban' : 'cards' }">
+      <UIcon :name="kanban ? 'i-lucide-kanban' : 'i-lucide-grid-2x2'" />
     </UButton>
     <UButton square color="neutral" :variant="viewMode === 'table' ? 'subtle' : 'outline'"
       @click="() => { viewMode = 'table' }">
