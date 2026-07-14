@@ -146,7 +146,7 @@ const pageTitle = computed(() => {
                 close>
                 <template #header="{ close }">
                     <div class="flex items-center gap-2.5">
-                        <UIcon name="i-ph-stack-duotone" class="size-8 shrink-0 text-primary" />
+                        <UIcon name="i-ph-palette-duotone" class="size-8 shrink-0 text-primary" />
                         <span v-if="!isCollapsed"
                             class="font-black text-neutral-900 dark:text-white tracking-tight">Creative<span
                                 class="text-primary">Self</span></span>

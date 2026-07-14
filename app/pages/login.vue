@@ -27,8 +27,9 @@ const handleLogin = () => {
         <UCard class="w-full max-w-sm shadow-sm">
             <header class="space-y-3 text-center">
                 <div class="flex items-center justify-center gap-2">
-                    <UIcon name="i-ph-stack-duotone" class="size-8 text-primary" />
-                    <span class="text-2xl font-black tracking-tight">Sand<span class="text-primary">Box</span></span>
+                    <UIcon name="i-ph-palette-duotone" class="size-8 text-primary" />
+                    <span class="text-2xl font-black tracking-tight">Creative<span
+                            class="text-primary">Self</span></span>
                 </div>
                 <div class="text-sm text-muted">Sign in to your account to continue</div>
             </header>
@@ -57,7 +58,7 @@ const handleLogin = () => {
                             class="size-5 text-primary shrink-0" />
                         <div>
                             <div class="text-sm font-semibold text-primary">{{store.roles.find((r: any) => r.id ===
-                                selectedRoleId)?.name }}</div>
+                                selectedRoleId)?.name}}</div>
                             <div class="text-xs text-muted">
                                 {{store.roles.find((r: any) => r.id === selectedRoleId)?.description}}
                             </div>

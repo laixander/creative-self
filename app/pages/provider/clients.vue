@@ -314,7 +314,7 @@ definePageMeta({
             </template>
             <template v-else>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 p-4 sm:p-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 p-4 sm:p-6">
                     <UCard v-for="client in pagedClients" :key="client.id" variant="subtle"
                         :ui="{ root: 'flex flex-col', body: 'flex-1 flex flex-col gap-4 sm:gap-6' }"
                         class="shadow-sm cursor-pointer hover:border-primary-500/50 transition-colors"
@@ -431,13 +431,13 @@ definePageMeta({
                         <div
                             class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
                             <span class="text-lg font-bold text-highlighted">{{ selectedClient.totalParticipants
-                                }}</span>
+                            }}</span>
                             <span class="text-xs text-muted uppercase tracking-wider">Attendees</span>
                         </div>
                         <div
                             class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
                             <span class="text-lg font-bold text-success">{{ formatter.format(selectedClient.totalSpend)
-                                }}</span>
+                            }}</span>
                             <span class="text-xs text-muted uppercase tracking-wider">Spend</span>
                         </div>
                     </div>

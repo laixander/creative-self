@@ -22,7 +22,7 @@ const teams = ref([{
 
 const demoTeam = ref({
     label: 'Demo',
-    icon: 'i-lucide-palette'
+    icon: 'i-lucide-monitor-cog'
 })
 
 const selectedTeam = useState('selectedTeam', () => teams.value[0])
