@@ -457,7 +457,7 @@ definePageMeta({
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 p-4 sm:p-6">
                     <UCard v-for="post in pagedMedia" :key="post.id" variant="subtle"
                         :ui="{ root: 'flex flex-col justify-start', header: 'p-0 sm:p-0', body: 'flex-1' }"
-                        class="shadow-sm cursor-pointer hover:border-primary-500/50 transition-colors overflow-hidden"
+                        class="shadow-sm cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-md hover:border-primary-500/50 overflow-hidden"
                         @click="openSlideover(post)">
                         <!-- Cover image -->
                         <template #header>
@@ -478,12 +478,6 @@ definePageMeta({
                                 </UBadge>
                                 <div class="font-semibold text-highlighted text-sm w-full truncate">
                                     {{ post.title }}
-                                </div>
-                                <div class="shrink-0" @click.stop>
-                                    <AppDropdownMenu :items="getDropdownItems(post)" size="sm"
-                                        trigger-icon="i-lucide-more-vertical" trigger-variant="ghost"
-                                        trigger-color="neutral" trigger-size="sm"
-                                        :content="{ align: 'end', side: 'bottom', sideOffset: 4 }" />
                                 </div>
                             </div>
                             <div class="mt-2 text-muted text-xs line-clamp-3">

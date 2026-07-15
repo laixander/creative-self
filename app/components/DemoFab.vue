@@ -4,6 +4,7 @@ import { useDashboardStore } from '~/stores/dashboardStore'
 import { useNotificationStore } from '~/stores/notificationStore'
 import { useKanbanStore } from '~/stores/kanbanStore'
 import { useProviderStore } from '~/stores/providerStore'
+import { useHrStore } from '~/stores/hrStore'
 
 // ============================================================================
 // Composables & State
@@ -13,6 +14,7 @@ const dashboardStore = useDashboardStore()
 const notificationStore = useNotificationStore()
 const kanbanStore = useKanbanStore()
 const providerStore = useProviderStore()
+const hrStore = useHrStore()
 const toast = useAppToast()
 const route = useRoute()
 
@@ -38,7 +40,8 @@ const handleSeed = async () => {
             dashboardStore.deployMockData(),
             notificationStore.deployMockData(),
             kanbanStore.deployMockData(),
-            providerStore.deployMockData()
+            providerStore.deployMockData(),
+            hrStore.deployMockData()
         ])
         toast.success('Data Deployed', 'Demo data has been seeded into the system.')
     } catch {
@@ -63,6 +66,7 @@ const handleReset = () => {
         notificationStore.removeMockData()
         kanbanStore.removeMockData()
         providerStore.removeMockData()
+        hrStore.removeMockData()
         toast.success('System Reset', 'All demo data has been cleared.')
     } catch {
         toast.error('Reset Failed', 'Could not clear the data.')

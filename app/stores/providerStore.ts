@@ -61,6 +61,56 @@ export const useProviderStore = defineStore('providerStore', {
             this.bookings = []
             this.availedBookings = []
             this.isDataDeployed = false
+        },
+
+        updateBookingStatus(id: number, status: 'confirmed' | 'completed' | 'cancelled' | 'rejected' | 'pending_confirmation') {
+            // Update Provider Booking
+            const booking = this.bookings.find(b => b.id === id)
+            if (booking) {
+                booking.status = status
+                
+                // If completed, add to availed in Provider
+                if (status === 'completed') {
+                    const existingAvailed = this.availedBookings.find(a => a.id === id)
+                    if (!existingAvailed) {
+                        this.availedBookings.unshift({
+                            id: booking.id,
+                            company: booking.company,
+                            offering: booking.offering,
+                            date: booking.date,
+                            participants: booking.participants,
+                            price: booking.price,
+                            rating: 0,
+                            status: 'completed'
+                        })
+                    }
+                }
+            }
+
+            // Sync to HR Store
+            // We use dynamic import to avoid circular dependency if hrStore imports providerStore at the top
+            import('./hrStore').then(({ useHrStore }) => {
+                const hrStore = useHrStore()
+                const hrBooking = hrStore.bookings.find(b => b.id === id)
+                if (hrBooking) {
+                    hrBooking.status = status as any
+                    if (status === 'completed') {
+                        const existingAvailed = hrStore.availedBookings.find(a => a.id === id)
+                        if (!existingAvailed) {
+                            hrStore.availedBookings.unshift({
+                                id: hrBooking.id,
+                                provider: hrBooking.provider,
+                                offering: hrBooking.offering,
+                                date: hrBooking.date,
+                                participants: hrBooking.participants,
+                                price: hrBooking.price,
+                                rating: 0,
+                                status: 'completed'
+                            })
+                        }
+                    }
+                }
+            })
         }
     },
     persist: {

@@ -317,7 +317,7 @@ definePageMeta({
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 p-4 sm:p-6">
                     <UCard v-for="client in pagedClients" :key="client.id" variant="subtle"
                         :ui="{ root: 'flex flex-col', body: 'flex-1 flex flex-col gap-4 sm:gap-6' }"
-                        class="shadow-sm cursor-pointer hover:border-primary-500/50 transition-colors"
+                        class="shadow-sm cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-md hover:border-primary-500/50"
                         @click="openSlideover(client)">
 
                         <!-- Card Header -->
@@ -334,15 +334,11 @@ definePageMeta({
                                         <div class="text-xs text-muted">{{ client.industry }}</div>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-1 shrink-0" @click.stop>
+                                <div class="flex items-center gap-1 shrink-0">
                                     <UBadge :color="statusColors[client.status]" variant="subtle" size="sm"
                                         class="capitalize">
                                         {{ client.status }}
                                     </UBadge>
-                                    <AppDropdownMenu :items="getDropdownItems(client)" size="sm"
-                                        trigger-icon="i-lucide-more-vertical" trigger-variant="ghost"
-                                        trigger-color="neutral" trigger-size="sm"
-                                        :content="{ align: 'end', side: 'bottom', sideOffset: 4 }" />
                                 </div>
                             </div>
                         </template>

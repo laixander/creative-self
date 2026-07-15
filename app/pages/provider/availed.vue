@@ -54,6 +54,14 @@ const stats = computed(() => [
     { label: 'Revenue', value: formatter.format(totalRevenue.value), icon: 'i-lucide-banknote', color: 'teal' }
 ])
 
+const isSlideoverOpen = ref(false)
+const selectedBooking = ref<BookingRow | null>(null)
+
+const openSlideover = (booking: BookingRow) => {
+    selectedBooking.value = booking
+    isSlideoverOpen.value = true
+}
+
 // ============================================================================
 // Actions
 // ============================================================================
@@ -68,7 +76,7 @@ function handleCancelBooking(booking: BookingRow) {
 }
 
 function handleViewDetails(booking: BookingRow) {
-    toast.add({ title: booking.offering, description: `${booking.company} · ${booking.date}`, color: 'neutral' })
+    openSlideover(booking)
 }
 
 const getBookingDropdownItems = (booking: BookingRow): DropdownMenuItem[] => [
@@ -272,7 +280,8 @@ definePageMeta({
             <template v-else>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6">
                     <UCard v-for="booking in pagedBookings" :key="booking.id" variant="subtle"
-                        :ui="{ body: 'flex items-center gap-4' }" class="shadow-sm">
+                        :ui="{ body: 'flex items-center gap-4' }" class="shadow-sm cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-md hover:border-primary-500/50"
+                        @click="openSlideover(booking)">
 
                     <!-- Thumbnail -->
                     <div class="size-16 rounded-lg overflow-hidden shrink-0 bg-elevated">
@@ -310,10 +319,6 @@ definePageMeta({
                         </div>
                     </div>
 
-                    <!-- Overflow menu -->
-                    <AppDropdownMenu :items="getBookingDropdownItems(booking)" size="sm"
-                        trigger-icon="i-lucide-more-vertical" trigger-variant="ghost" trigger-color="neutral"
-                        trigger-size="sm" :content="{ align: 'end', side: 'bottom', sideOffset: 4 }" />
                 </UCard>
                 </div>
             </template>
@@ -325,4 +330,62 @@ definePageMeta({
                 variant="subtle" />
         </div>
     </template>
+
+    <!-- Slideover -->
+    <USlideover v-model:open="isSlideoverOpen" title="Booking Details">
+        <template #body>
+            <div v-if="selectedBooking" class="space-y-6">
+                <!-- Thumbnail -->
+                <div v-if="selectedBooking.image" class="aspect-video w-full rounded-lg overflow-hidden bg-elevated border border-default">
+                    <img :src="selectedBooking.image" class="w-full h-full object-cover" />
+                </div>
+                
+                <div>
+                    <h1 class="text-2xl font-bold text-highlighted mb-2">{{ selectedBooking.offering }}</h1>
+                    <div class="flex items-center gap-2 mb-4">
+                        <UBadge :color="statusColors[selectedBooking.status]" variant="subtle" class="capitalize">
+                            {{ selectedBooking.status }}
+                        </UBadge>
+                        <span class="text-sm text-muted ml-2">
+                            for <span class="font-medium text-highlighted">{{ selectedBooking.company }}</span>
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                        <UIcon name="i-lucide-calendar" class="size-5 text-muted mb-1" />
+                        <span class="text-lg font-bold text-highlighted">{{ selectedBooking.date }}</span>
+                        <span class="text-xs text-muted uppercase tracking-wider mt-1">Date</span>
+                    </div>
+                    <div class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                        <UIcon name="i-lucide-users" class="size-5 text-muted mb-1" />
+                        <span class="text-lg font-bold text-highlighted">{{ selectedBooking.participants }}</span>
+                        <span class="text-xs text-muted uppercase tracking-wider mt-1">Participants</span>
+                    </div>
+                    <div class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                        <UIcon name="i-lucide-banknote" class="size-5 text-success mb-1" />
+                        <span class="text-lg font-bold text-highlighted">{{ formatter.format(selectedBooking.price) }}</span>
+                        <span class="text-xs text-muted uppercase tracking-wider mt-1">Revenue</span>
+                    </div>
+                    <div class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                        <UIcon name="i-lucide-star" class="size-5 text-amber-400 mb-1" />
+                        <span class="text-lg font-bold text-highlighted">{{ selectedBooking.rating > 0 ? selectedBooking.rating.toFixed(1) : '—' }}</span>
+                        <span class="text-xs text-muted uppercase tracking-wider mt-1">Rating</span>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template #footer>
+            <div class="flex justify-between w-full">
+                <div class="flex gap-2">
+                    <template v-if="selectedBooking">
+                        <UButton v-if="selectedBooking.status === 'confirmed'" color="success" icon="i-lucide-check-circle" label="Mark Completed" @click="() => { handleMarkCompleted(selectedBooking!); isSlideoverOpen = false; }" />
+                        <UButton v-if="selectedBooking.status !== 'cancelled'" color="error" variant="soft" icon="i-lucide-x-circle" label="Cancel Booking" @click="() => { handleCancelBooking(selectedBooking!); isSlideoverOpen = false; }" />
+                    </template>
+                </div>
+                <UButton color="neutral" variant="outline" label="Close" @click="isSlideoverOpen = false" />
+            </div>
+        </template>
+    </USlideover>
 </template>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useProviderStore } from '~/stores/providerStore'
-import type { DropdownMenuItem } from '@nuxt/ui'
 
 definePageMeta({
     title: 'Schedule',
@@ -12,9 +11,12 @@ definePageMeta({
 // State
 // ============================================================================
 const viewMode = ref<'calendar' | 'list'>('calendar')
-const expandedEventId = ref<number | null>(null)
-const toggleEvent = (id: number) => {
-    expandedEventId.value = expandedEventId.value === id ? null : id
+const isSlideoverOpen = ref(false)
+const selectedEvent = ref<Event | null>(null)
+
+const openEventDetails = (event: Event) => {
+    selectedEvent.value = event
+    isSlideoverOpen.value = true
 }
 const currentDate = ref(new Date(2026, 6, 1)) // Default to July 2026 based on context
 
@@ -168,11 +170,6 @@ const pillColors: Record<string, string> = {
     error: 'bg-error/10 text-error border-error/20 hover:bg-error/20',
     info: 'bg-info/10 text-info border-info/20 hover:bg-info/20'
 }
-
-const getEventDropdownItems = (event: Event): DropdownMenuItem[] => [
-    { label: 'Edit Event', icon: 'i-lucide-pencil', onSelect: () => console.log('Edit event', event.id) },
-    { label: 'Cancel Event', icon: 'i-lucide-x-circle', color: 'error' as const, onSelect: () => console.log('Cancel event', event.id) }
-]
 </script>
 
 <template>
@@ -230,12 +227,11 @@ const getEventDropdownItems = (event: Event): DropdownMenuItem[] => [
                         </div>
                     </div>
 
-                    <!-- Events Container -->
                     <div class="flex flex-col gap-1 px-1 overflow-y-auto max-h-[calc(100%-32px)] scrollbar-hide">
-                        <div v-for="event in cell.events" :key="event.id" @click.stop="toggleEvent(event.id)"
-                            class="text-xs px-2 py-1 rounded border cursor-pointer transition-all duration-200" :class="[
-                                pillColors[event.color] || pillColors.primary,
-                                expandedEventId === event.id ? 'whitespace-normal break-words relative z-10' : 'truncate'
+                        <div v-for="event in cell.events" :key="event.id" @click.stop="openEventDetails(event)"
+                            class="text-xs px-2 py-1 rounded border cursor-pointer transition-all duration-200 truncate"
+                            :class="[
+                                pillColors[event.color] || pillColors.primary
                             ]">
                             <span class="font-medium mr-1">{{ event.time }}</span>
                             <span>{{ event.title }}</span>
@@ -258,13 +254,14 @@ const getEventDropdownItems = (event: Event): DropdownMenuItem[] => [
 
                 <div class="flex flex-col gap-3">
                     <UCard v-for="event in monthEvents" :key="event.id" variant="subtle"
-                        :ui="{ body: 'p-4 sm:p-4 flex flex-col sm:flex-row sm:items-center gap-4' }">
+                        :ui="{ body: 'p-4 sm:p-4 flex flex-col sm:flex-row sm:items-center gap-4' }"
+                        class="shadow-sm cursor-pointer transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-md hover:border-primary-500/50" @click="openEventDetails(event)">
                         <!-- Date Badge -->
                         <div
                             class="w-14 h-14 rounded-xl bg-primary/10 flex flex-col items-center justify-center shrink-0">
                             <span class="text-lg font-bold text-primary leading-tight">{{
                                 getDayInfo(event.date).number
-                                }}</span>
+                            }}</span>
                             <span class="text-[10px] font-semibold text-primary uppercase leading-tight mt-0.5">{{
                                 getDayInfo(event.date).day }}</span>
                         </div>
@@ -289,15 +286,73 @@ const getEventDropdownItems = (event: Event): DropdownMenuItem[] => [
                                 class="rounded-full px-3 py-1 font-medium">
                                 Pending
                             </UBadge>
-                            <AppDropdownMenu :items="getEventDropdownItems(event)" size="sm"
-                                trigger-icon="i-lucide-more-vertical" trigger-variant="ghost" trigger-color="neutral"
-                                trigger-size="sm" :content="{ align: 'end', side: 'bottom', sideOffset: 4 }" />
                         </div>
                     </UCard>
                 </div>
             </div>
         </div>
     </div>
+
+    <USlideover v-model:open="isSlideoverOpen" title="Event Details">
+        <template #body>
+            <div v-if="selectedEvent" class="space-y-6">
+                <div>
+                    <h1 class="text-2xl font-bold text-highlighted mb-2">{{ selectedEvent.title }}</h1>
+                    <div class="flex items-center gap-2 mb-4">
+                        <UBadge v-if="selectedEvent.status === 'Confirmed'" color="success" variant="subtle"
+                            class="rounded-full px-3 py-1 font-medium">Confirmed</UBadge>
+                        <UBadge v-else-if="selectedEvent.status === 'Pending'" color="warning" variant="subtle"
+                            class="rounded-full px-3 py-1 font-medium">Pending</UBadge>
+                        <UBadge color="neutral" variant="subtle" class="rounded-full px-3 py-1 font-medium capitalize">
+                            {{ selectedEvent.type }}</UBadge>
+                    </div>
+                    <p v-if="selectedEvent.organization" class="text-highlighted leading-relaxed font-medium">
+                        {{ selectedEvent.organization }}
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div
+                        class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                        <UIcon name="i-lucide-calendar" class="size-5 text-muted mb-1" />
+                        <span class="text-lg font-bold text-highlighted">{{ selectedEvent.date }}</span>
+                        <span class="text-xs text-muted uppercase tracking-wider mt-1">Date</span>
+                    </div>
+                    <div
+                        class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
+                        <UIcon name="i-lucide-clock" class="size-5 text-muted mb-1" />
+                        <span class="text-lg font-bold text-highlighted">{{ selectedEvent.time }}</span>
+                        <span class="text-xs text-muted uppercase tracking-wider mt-1">{{ selectedEvent.duration
+                            }}</span>
+                    </div>
+                    <div
+                        class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default col-span-2">
+                        <UIcon name="i-lucide-users" class="size-5 text-muted mb-1" />
+                        <span class="text-lg font-bold text-highlighted">{{ selectedEvent.participants }}</span>
+                        <span class="text-xs text-muted uppercase tracking-wider mt-1">Participants</span>
+                    </div>
+                    <div v-if="selectedEvent.locationStr"
+                        class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default col-span-2">
+                        <UIcon name="i-lucide-map-pin" class="size-5 text-muted mb-1" />
+                        <span class="text-sm font-bold text-highlighted text-center px-2">{{ selectedEvent.locationStr
+                            }}</span>
+                        <span class="text-xs text-muted uppercase tracking-wider mt-1">Location</span>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template #footer>
+            <div class="flex justify-between w-full">
+                <div class="flex gap-2">
+                    <UButton color="primary" icon="i-lucide-pencil" label="Edit"
+                        @click="() => console.log('Edit event', selectedEvent?.id)" />
+                    <UButton color="error" variant="soft" icon="i-lucide-x-circle" label="Cancel"
+                        @click="() => console.log('Cancel event', selectedEvent?.id)" />
+                </div>
+                <UButton color="neutral" variant="outline" label="Close" @click="isSlideoverOpen = false" />
+            </div>
+        </template>
+    </USlideover>
 </template>
 
 <style scoped>
