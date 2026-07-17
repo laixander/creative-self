@@ -151,12 +151,14 @@ const pageTitle = computed(() => {
                 :ui="{ root: '[--sidebar-width-icon:4.5625rem]', container: 'h-full', header: 'px-5', body: 'scrollbar' }"
                 close>
                 <template #header="{ close }">
-                    <div class="flex items-center gap-2.5">
+                    <div v-if="!isCollapsed" class="flex items-center gap-2.5 flex-1">
                         <UIcon name="i-ph-palette-duotone" class="size-8 shrink-0 text-primary" />
-                        <span v-if="!isCollapsed"
-                            class="font-black text-neutral-900 dark:text-white tracking-tight">Creative<span
-                                class="text-primary">Self</span></span>
+                        <span class="font-black text-neutral-900 dark:text-white tracking-tight whitespace-nowrap">
+                            Creative <span class="text-primary">Self</span>
+                        </span>
                     </div>
+                    <UButton :icon="side === 'left' ? 'i-lucide-panel-left' : 'i-lucide-panel-right'" color="neutral"
+                        variant="ghost" aria-label="Toggle sidebar" @click="open = !open" />
                     <UButton class="lg:hidden ml-auto" icon="i-lucide-x" color="neutral" variant="ghost"
                         aria-label="Close sidebar" @click="close()" />
                 </template>
@@ -181,12 +183,12 @@ const pageTitle = computed(() => {
 
             <div
                 class="flex-1 flex flex-col overflow-hidden lg:peer-data-[variant=floating]:my-4 peer-data-[variant=inset]:m-4 lg:peer-data-[variant=inset]:not-peer-data-[collapsible=offcanvas]:ms-0 peer-data-[variant=inset]:rounded-xl peer-data-[variant=inset]:shadow-sm peer-data-[variant=inset]:ring peer-data-[variant=inset]:ring-default bg-default">
-                <div class="h-(--ui-header-height) shrink-0 flex items-center px-4 sm:pe-6" :class="[
+                <div class="h-(--ui-header-height) shrink-0 flex items-center px-4 sm:px-6" :class="[
                     variant !== 'floating' && 'border-b border-default',
                     side === 'right' && 'justify-end'
                 ]">
                     <UButton :icon="side === 'left' ? 'i-lucide-panel-left' : 'i-lucide-panel-right'" color="neutral"
-                        variant="ghost" aria-label="Toggle sidebar" class="mr-2" @click="open = !open" />
+                        variant="ghost" aria-label="Toggle sidebar" class="mr-2 lg:hidden" @click="open = !open" />
                     <!-- setup title in page, not here -->
                     <h1 class="font-bold">{{ pageTitle }}</h1>
                     <div class="ml-auto flex items-center gap-2">
@@ -197,7 +199,7 @@ const pageTitle = computed(() => {
 
                 <div :class="[
                     'flex-1',
-                    route.meta.isTable ? 'flex flex-col overflow-hidden min-h-0' : 'p-4 overflow-y-auto scrollbar'
+                    route.meta.isTable ? 'flex flex-col overflow-hidden min-h-0' : 'p-4 sm:p-6 overflow-y-auto scrollbar'
                 ]">
                     <AuthGate v-if="!isAuthorized" title="Access Denied"
                         description="You do not have permission to view this page." />

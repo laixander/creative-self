@@ -254,7 +254,7 @@ const displayColumns = computed(() => {
         <AppTableColumnToggle :table="table" v-if="viewMode === 'table'" />
         <UPopover>
             <UChip :show="activeFilterCount > 0">
-                <UButton icon="i-lucide-sliders-horizontal" color="neutral" variant="subtle" />
+                <UButton label="Filters" icon="i-lucide-sliders-horizontal" color="neutral" variant="subtle" />
             </UChip>
             <template #content>
                 <div class="flex flex-col gap-2 p-3 w-64">

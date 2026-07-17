@@ -83,6 +83,13 @@ const activeFilterCount = computed(() => {
 })
 
 // ============================================================================
+// Page meta
+// ============================================================================
+definePageMeta({
+    isTable: true
+})
+
+// ============================================================================
 // Slideover / Detail
 // ============================================================================
 const isSlideoverOpen = ref(false)
@@ -191,18 +198,20 @@ function submitBooking() {
                             <UBadge variant="subtle" :color="typeColors[course.type]" size="sm" class="capitalize">
                                 {{ course.type }}
                             </UBadge>
-                            <span class="text-xs text-muted">{{ course.providerName }}</span>
+                            <UBadge variant="soft" color="neutral" size="sm" class="capitalize">
+                                {{ course.providerName }}
+                            </UBadge>
                         </div>
-                        <div class="font-semibold text-highlighted text-lg w-full leading-tight mb-2">
+                        <div class="font-semibold text-highlighted text-sm w-full leading-tight mb-2">
                             {{ course.title }}
                         </div>
-                        <div class="mt-2 text-muted text-sm line-clamp-3">
+                        <div class="mt-2 text-muted text-xs line-clamp-3">
                             {{ course.description }}
                         </div>
                         <div class="mt-4 flex items-center justify-between text-sm">
                             <span class="font-bold text-highlighted">${{ course.price }}</span>
-                            <span class="text-muted flex items-center gap-1">
-                                <UIcon name="i-lucide-clock" /> {{ course.duration }}
+                            <span class="text-xs text-muted flex items-center gap-1">
+                                <UIcon name="i-lucide-clock" class="size-4" /> {{ course.duration }}
                             </span>
                         </div>
                     </div>
@@ -227,18 +236,18 @@ function submitBooking() {
                 </div>
 
                 <div>
-                    <h1 class="text-2xl font-bold text-highlighted mb-1">{{ selectedOffering.title }}</h1>
-                    <p class="text-primary font-medium mb-4">By {{ selectedOffering.providerName }}</p>
-                    
                     <div class="flex items-center gap-2 mb-4">
                         <UBadge :color="typeColors[selectedOffering.type]" variant="subtle" class="capitalize">
                             {{ selectedOffering.type }}
                         </UBadge>
-                        <span class="text-sm text-muted ml-2">
+                        <UBadge color="neutral" variant="soft" class="capitalize flex items-center gap-1.5">
+                            <UIcon name="i-lucide-tag" />
                             {{ categoryLabels[selectedOffering.category] }}
-                        </span>
+                        </UBadge>
                     </div>
-                    <p class="text-muted leading-relaxed">
+                    <h1 class="text-xl font-bold text-highlighted mb-1">{{ selectedOffering.title }}</h1>
+                    <p class="text-sm text-primary font-medium mb-4">By {{ selectedOffering.providerName }}</p>
+                    <p class="text-sm text-muted leading-relaxed">
                         {{ selectedOffering.description }}
                     </p>
                 </div>
@@ -247,17 +256,17 @@ function submitBooking() {
                     <div class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
                         <UIcon name="i-lucide-circle-dollar-sign" class="size-5 text-success mb-1" />
                         <span class="text-lg font-bold text-highlighted">${{ selectedOffering.price }}</span>
-                        <span class="text-xs text-muted uppercase tracking-wider">Price</span>
+                        <span class="text-[10px] text-muted uppercase tracking-wider">Price</span>
                     </div>
                     <div class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
                         <UIcon name="i-lucide-clock" class="size-5 text-muted mb-1" />
                         <span class="text-lg font-bold text-highlighted">{{ selectedOffering.duration }}</span>
-                        <span class="text-xs text-muted uppercase tracking-wider">Duration</span>
+                        <span class="text-[10px] text-muted uppercase tracking-wider">Duration</span>
                     </div>
                     <div class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
                         <UIcon name="i-lucide-users" class="size-5 text-muted mb-1" />
                         <span class="text-lg font-bold text-highlighted">{{ selectedOffering.maxParticipants }}</span>
-                        <span class="text-xs text-muted uppercase tracking-wider">Capacity</span>
+                        <span class="text-[10px] text-muted uppercase tracking-wider">Capacity</span>
                     </div>
                 </div>
             </div>

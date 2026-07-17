@@ -380,7 +380,7 @@ const activeFilterCount = computed(() => {
         <AppTableColumnToggle :table="table" v-if="viewMode == 'table'" />
         <UPopover>
             <UChip :show="activeFilterCount > 0">
-                <UButton icon="i-lucide-sliders-horizontal" color="neutral" variant="subtle" />
+                <UButton label="Filter" icon="i-lucide-sliders-horizontal" color="neutral" variant="subtle" />
             </UChip>
             <template #content>
                 <div class="flex flex-col gap-2 p-3 w-64">
@@ -402,6 +402,7 @@ const activeFilterCount = computed(() => {
             </template>
         </UPopover>
         <AppViewToggle v-model="viewMode" />
+        <USeparator orientation="vertical" class="h-7 mx-2" />
         <UButton icon="i-lucide-plus" label="New Offering" @click="openCreateModal" />
     </Teleport>
 
@@ -537,55 +538,132 @@ const activeFilterCount = computed(() => {
     <!-- Slideover -->
     <USlideover v-model:open="isSlideoverOpen" title="Offering Details">
         <template #body>
-            <div v-if="selectedCourse" class="space-y-6">
-                <div v-if="selectedCourse.image" class="aspect-video w-full rounded-lg overflow-hidden bg-elevated border border-default">
+            <div v-if="selectedCourse" class="flex flex-col gap-6">
+                <!-- Cover Image -->
+                <div v-if="selectedCourse.image" class="w-full h-48 rounded-lg overflow-hidden bg-elevated border border-default shrink-0">
                     <img :src="selectedCourse.image" class="w-full h-full object-cover" />
                 </div>
-                <div v-else class="aspect-video w-full rounded-lg bg-elevated border border-default flex items-center justify-center">
+                <div v-else class="w-full h-48 rounded-lg bg-elevated border border-default flex items-center justify-center shrink-0">
                     <UIcon name="i-lucide-image" class="text-muted text-4xl" />
                 </div>
 
-                <div>
-                    <h1 class="text-2xl font-bold text-highlighted mb-2">{{ selectedCourse.title }}</h1>
-                    <div class="flex items-center gap-2 mb-4">
-                        <UBadge :color="typeColors[selectedCourse.type]" variant="subtle" class="capitalize">
-                            {{ selectedCourse.type }}
-                        </UBadge>
-                        <UBadge :color="statusColors[selectedCourse.status]" variant="subtle" class="capitalize">
+                <!-- Title and Badges -->
+                <div class="flex flex-col gap-3">
+                    <div class="flex items-center gap-2">
+                        <UBadge :color="statusColors[selectedCourse.status]" variant="outline" class="capitalize flex items-center gap-1.5" :ui="{ rounded: 'rounded-full' }">
+                            <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
                             {{ selectedCourse.status }}
                         </UBadge>
-                        <span class="text-sm text-muted ml-2">
+                        <UBadge :color="typeColors[selectedCourse.type]" variant="soft" class="capitalize">
+                            {{ selectedCourse.type }}
+                        </UBadge>
+                        <UBadge color="neutral" variant="soft" class="capitalize flex items-center gap-1.5">
+                            <UIcon name="i-lucide-tag" />
                             {{ categoryLabels[selectedCourse.category] }}
-                        </span>
+                        </UBadge>
                     </div>
-                    <p class="text-muted leading-relaxed">
-                        {{ selectedCourse.description }}
+                    <h2 class="text-xl font-bold text-highlighted">{{ selectedCourse.title }}</h2>
+                </div>
+
+                <USeparator />
+
+                <!-- Grid Details -->
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-y-6 gap-x-4">
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex items-center gap-2 text-muted text-xs">
+                            <UIcon name="i-lucide-circle-dollar-sign" class="size-4 text-success" />
+                            Price
+                        </div>
+                        <div class="font-medium text-highlighted text-sm">
+                            {{ formatter.format(selectedCourse.price) }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex items-center gap-2 text-muted text-xs">
+                            <UIcon name="i-lucide-clock" class="size-4" />
+                            Duration
+                        </div>
+                        <div class="font-medium text-highlighted text-sm">
+                            {{ selectedCourse.duration }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex items-center gap-2 text-muted text-xs">
+                            <UIcon name="i-lucide-users" class="size-4" />
+                            Capacity
+                        </div>
+                        <div class="font-medium text-highlighted text-sm">
+                            {{ selectedCourse.maxParticipants }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex items-center gap-2 text-muted text-xs">
+                            <UIcon name="i-lucide-message-square" class="size-4" />
+                            Category
+                        </div>
+                        <div class="font-medium text-highlighted text-sm">
+                            {{ categoryLabels[selectedCourse.category] }}
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-1.5">
+                        <div class="flex items-center gap-2 text-muted text-xs">
+                            <UIcon name="i-lucide-monitor" class="size-4" />
+                            Delivery
+                        </div>
+                        <div class="font-medium text-highlighted capitalize text-sm">
+                            {{ selectedCourse.type }}
+                        </div>
+                    </div>
+                </div>
+
+                <USeparator />
+
+                <!-- Description -->
+                <div class="flex flex-col gap-2">
+                    <h3 class="font-medium text-highlighted">Description</h3>
+                    <p class="text-muted text-sm leading-relaxed">
+                        {{ selectedCourse.description || 'No description provided.' }}
                     </p>
                 </div>
 
-                <div class="grid grid-cols-3 gap-3">
-                    <div class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
-                        <UIcon name="i-lucide-circle-dollar-sign" class="size-5 text-success mb-1" />
-                        <span class="text-lg font-bold text-highlighted">${{ selectedCourse.price }}</span>
-                        <span class="text-xs text-muted uppercase tracking-wider">Price</span>
-                    </div>
-                    <div class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
-                        <UIcon name="i-lucide-clock" class="size-5 text-muted mb-1" />
-                        <span class="text-lg font-bold text-highlighted">{{ selectedCourse.duration }}</span>
-                        <span class="text-xs text-muted uppercase tracking-wider">Duration</span>
-                    </div>
-                    <div class="flex flex-col items-center justify-center p-3 rounded-lg bg-elevated border border-default">
-                        <UIcon name="i-lucide-users" class="size-5 text-muted mb-1" />
-                        <span class="text-lg font-bold text-highlighted">{{ selectedCourse.maxParticipants }}</span>
-                        <span class="text-xs text-muted uppercase tracking-wider">Capacity</span>
+                <USeparator />
+                
+                <!-- Actions -->
+                <div class="flex flex-col gap-3">
+                    <h3 class="font-medium text-highlighted">Actions</h3>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <UButton 
+                            color="primary" 
+                            variant="outline" 
+                            icon="i-lucide-pencil" 
+                            label="Edit Offering" 
+                            @click="() => { isSlideoverOpen = false; handleEdit(selectedCourse!) }"
+                        />
+                        <UButton
+                            v-if="selectedCourse.status === 'draft'"
+                            color="success"
+                            variant="outline"
+                            icon="i-lucide-upload"
+                            label="Publish"
+                            @click="() => { isSlideoverOpen = false; handlePublish(selectedCourse!) }"
+                        />
+                        <UButton 
+                            v-if="selectedCourse.status === 'published'"
+                            color="warning" 
+                            variant="outline" 
+                            icon="i-lucide-archive" 
+                            label="Archive" 
+                            @click="() => { isSlideoverOpen = false; handleArchive(selectedCourse!) }"
+                        />
+                        <UButton 
+                            color="error" 
+                            variant="outline" 
+                            icon="i-lucide-trash-2" 
+                            label="Delete" 
+                            @click="() => { isSlideoverOpen = false; handleDelete(selectedCourse!) }"
+                        />
                     </div>
                 </div>
-            </div>
-        </template>
-        <template #footer>
-            <div class="flex justify-end gap-2 w-full">
-                <UButton color="neutral" variant="outline" label="Close" @click="isSlideoverOpen = false" />
-                <UButton color="primary" icon="i-lucide-pencil" label="Edit Offering" @click="() => { isSlideoverOpen = false; handleEdit(selectedCourse!) }" />
             </div>
         </template>
     </USlideover>

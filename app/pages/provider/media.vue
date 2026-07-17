@@ -410,7 +410,7 @@ definePageMeta({
         <AppTableColumnToggle :table="table" v-if="viewMode === 'table'" />
         <UPopover>
             <UChip :show="activeFilterCount > 0">
-                <UButton icon="i-lucide-sliders-horizontal" color="neutral" variant="subtle" />
+                <UButton label="Filters" icon="i-lucide-sliders-horizontal" color="neutral" variant="subtle" />
             </UChip>
             <template #content>
                 <div class="flex flex-col gap-2 p-3 w-56">
@@ -428,6 +428,7 @@ definePageMeta({
             </template>
         </UPopover>
         <AppViewToggle v-model="viewMode" />
+        <USeparator orientation="vertical" class="h-7 mx-2" />
         <UButton icon="i-lucide-plus" label="New Media Post" @click="openCreateModal" />
     </Teleport>
 
